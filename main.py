@@ -332,6 +332,7 @@ def today(m):
 
     bot.send_message(m.chat.id, result)
 
+
 @bot.message_handler(func=lambda m: m.text == "📅 Tomorrow bookings")
 def tomorrow(m):
 
@@ -339,7 +340,6 @@ def tomorrow(m):
         return
 
     data = load_bookings()
-
     tomorrow = (datetime.now() + timedelta(days=1)).strftime("%b %d")
 
     result = ""
@@ -363,13 +363,11 @@ def tomorrow(m):
 
     bot.send_message(m.chat.id, result)
 
+
 @bot.message_handler(func=lambda m: m.text == "💰 Income")
 def income(m):
 
-    bot.send_message(
-        m.chat.id,
-        "Income stats"
-    )
+    bot.send_message(m.chat.id, "Income stats")
 
 
 # ---------- INCOME ----------
