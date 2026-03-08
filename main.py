@@ -291,8 +291,18 @@ def admin(m):
 @bot.message_handler(func=lambda m: m.text == "📅 Today bookings")
 def today(m):
 
+    bot.send_message(
+        m.chat.id,
+        "Today bookings feature coming soon"
+    )
+
 @bot.message_handler(func=lambda m: m.text == "💰 Income")
 def income(m):
+
+    bot.send_message(
+        m.chat.id,
+        "Income stats"
+    )
 
 
 # ---------- TODAY ----------
