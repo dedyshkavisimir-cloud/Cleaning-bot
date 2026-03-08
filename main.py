@@ -387,4 +387,4 @@ def income(m):
     bot.send_message(m.chat.id,f"💰 Total income: ${total}")
 
 
-bot.infinity_polling()
+bot.infinity_polling(skip_pending=True)
