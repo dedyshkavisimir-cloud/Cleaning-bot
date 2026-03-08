@@ -332,7 +332,7 @@ def today(m):
 
     bot.send_message(m.chat.id, result)
 
-@bot.message_handler(func=lambda m: m.text == "📆 Tomorrow bookings")
+@bot.message_handler(func=lambda m: m.text == "📅 Tomorrow bookings")
 def tomorrow(m):
 
     if m.chat.id != ADMIN_ID:
@@ -370,24 +370,6 @@ def income(m):
         m.chat.id,
         "Income stats"
     )
-
-
-# ---------- TODAY ----------
-
-@bot.message_handler(func=lambda m: m.text == "Today bookings")
-def today(m):
-
-    bookings = load_bookings()
-
-    today = datetime.now().strftime("%b %d")
-
-    text = "📅 TODAY BOOKINGS\n\n"
-
-    for i in bookings:
-        if i["date"] == today:
-            text += f"{i['name']} — ${i['price']}\n"
-
-    bot.send_message(m.chat.id,text)
 
 
 # ---------- INCOME ----------
