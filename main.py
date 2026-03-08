@@ -89,15 +89,53 @@ def extras(m):
 
     user_data[m.chat.id]["date"] = m.text
 
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("Inside fridge","Inside oven","No extras")
+    bot.send_message(
+        m.chat.id,
+        "Please enter your name"
+    ) 
 
-    bot.send_message(m.chat.id,"Extras?",reply_markup=kb)
+@bot.message_handler(func=lambda m: m.chat.id in user_data and "name" not in user_data[m.chat.id])
+def client_name(m):
+
+    user_data[m.chat.id]["name"] = m.text
+
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb.add("Inside fridge","Inside oven")
+    kb.add("Inside cabinets","Pet hair")
+    kb.add("Done")
+
+    user_data[m.chat.id]["extras"] = []
+
+    bot.send_message(
+        m.chat.id,
+        "Select extras (you can choose multiple). Press DONE when finished.",
+        reply_markup=kb
+    )
+
+@bot.message_handler(func=lambda m: m.text in ["Inside fridge","Inside oven","Inside cabinets","Pet hair"])
+def add_extra(m):
+
+    user_data[m.chat.id]["extras"].append(m.text)
+
+    bot.send_message(
+        m.chat.id,
+        f"{m.text} added. Select more or press DONE."
+    )
+
+@bot.message_handler(func=lambda m: m.text == "Done")
+def extras_done(m):
+
+    bot.send_message(
+        m.chat.id,
+        "Send address"
+    )
 
 @bot.message_handler(func=lambda m: m.text in ["Inside fridge","Inside oven","No extras"])
 def address(m):
 
-    user_data[m.chat.id]["extras"] = m.text
+    user_data[m.chat.id]["address"] = m.text
+
+    bot.send_message(m.chat.id,"Send phone number")
 
     bot.send_message(m.chat.id,"Send address")
 
@@ -137,7 +175,7 @@ Bedrooms: {d['bedrooms']}
 Price: ${d['price']}
 
 Date: {d['date']}
-Extras: {d['extras']}
+Extras: {", ".join(d['extras'])}
 
 Address: {d['address']}
 Phone: {d['phone']}
