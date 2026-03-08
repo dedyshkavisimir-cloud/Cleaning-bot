@@ -122,15 +122,20 @@ def cleaning_type(m):
 
 # ---------- BEDROOMS ----------
 
-@bot.message_handler(func=lambda m: m.text in prices)
+@bot.message_handler(func=lambda m: m.text in ["Regular cleaning","Deep cleaning","Move out cleaning"])
 def bedrooms(m):
 
-    user_data[m.chat.id] = {"cleaning":m.text}
+    user_data[m.chat.id] = {}
+    user_data[m.chat.id]["cleaning"] = m.text
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("1","2","3")
+    kb.add("1 Bedroom","2 Bedrooms","3 Bedrooms")
 
-    bot.send_message(m.chat.id,"How many bedrooms?",reply_markup=kb)
+    bot.send_message(
+        m.chat.id,
+        "How many bedrooms?",
+        reply_markup=kb
+    )
 
 
 # ---------- DATE ----------
