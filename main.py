@@ -64,23 +64,30 @@ def prices_menu(m):
     bot.send_message(
         m.chat.id,
 """
-💰 CLEANING PRICES
+💰 *CLEANING PRICES*
 
-🧹 Regular cleaning
+━━━━━━━━━━━━
+
+🧹 *Regular cleaning*
 • 1 bedroom — $120
 • 2 bedrooms — $150
 • 3 bedrooms — $180
 
-✨ Deep cleaning
+━━━━━━━━━━━━
+
+✨ *Deep cleaning*
 • 1 bedroom — $180
 • 2 bedrooms — $220
 • 3 bedrooms — $260
 
-🚚 Move out cleaning
+━━━━━━━━━━━━
+
+🚚 *Move out cleaning*
 • 1 bedroom — $200
 • 2 bedrooms — $250
 • 3 bedrooms — $300
-"""
+""",
+        parse_mode="Markdown"
     )
 
 
