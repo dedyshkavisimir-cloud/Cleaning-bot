@@ -32,6 +32,43 @@ def main_menu(user):
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
     kb.add("Book cleaning")
+    kb.add("Prices","Contact")
+
+@bot.message_handler(func=lambda m: m.text == "Prices")
+def prices_menu(m):
+
+    bot.send_message(
+        m.chat.id,
+"""
+Regular cleaning
+1 bedroom $120
+2 bedrooms $150
+3 bedrooms $180
+
+Deep cleaning
+1 bedroom $180
+2 bedrooms $220
+3 bedrooms $260
+
+Move out cleaning
+1 bedroom $200
+2 bedrooms $250
+3 bedrooms $300
+"""
+)
+
+@bot.message_handler(func=lambda m: m.text == "Contact")
+def contact(m):
+
+    bot.send_message(
+        m.chat.id,
+"""
+Cleaning Pros Team
+
+Phone: 2532020979
+Email: manager@excellentsolution.online
+"""
+)
 
     if user == ADMIN_ID:
         kb.add("Admin panel")
@@ -152,7 +189,6 @@ def finish(m):
     d = user_data[m.chat.id]
 
     d["phone"] = m.text
-    d["name"] = m.from_user.first_name
     d["chat_id"] = m.chat.id
 
     bookings = load_bookings()
