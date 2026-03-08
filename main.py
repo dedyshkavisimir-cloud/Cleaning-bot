@@ -31,10 +31,13 @@ def main_menu(user):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
-    kb.add("Book cleaning")
-    kb.add("Prices","Contact")
+    kb.add("🧹 Book cleaning")
+    kb.add("💲 Prices", "📞 Contact")
 
-return kb
+    if user == ADMIN_ID:
+        kb.add("⚙ Admin panel")
+
+    return kb
 
 @bot.message_handler(func=lambda m: m.text == "Prices")
 def prices_menu(m):
