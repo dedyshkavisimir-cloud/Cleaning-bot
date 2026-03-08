@@ -369,12 +369,6 @@ def tomorrow(m):
     bot.send_message(m.chat.id, result)
 
 
-@bot.message_handler(func=lambda m: m.text == "💰 Income")
-def income(m):
-
-    bot.send_message(m.chat.id, "Income stats")
-
-
 # ---------- INCOME ----------
 
 @bot.message_handler(func=lambda m: m.text == "Income")
