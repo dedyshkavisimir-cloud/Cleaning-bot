@@ -130,7 +130,7 @@ def bedrooms(m):
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
     kb.add("1","2","3")
 
-@bot.send_message(m.chat.id,"How many bedrooms?",reply_markup=kb)
+    bot.send_message(m.chat.id,"How many bedrooms?",reply_markup=kb)
 
 
 # ---------- DATE ----------
