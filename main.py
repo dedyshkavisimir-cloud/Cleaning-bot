@@ -62,7 +62,7 @@ def start(m):
 def prices_menu(m):
 
     bot.send_message(
-        m.chat.id,
+    m.chat.id,
 """
 💰 *CLEANING PRICES*
 
@@ -87,8 +87,8 @@ def prices_menu(m):
 • 2 bedrooms — $250
 • 3 bedrooms — $300
 """,
-        parse_mode="Markdown"
-    )
+parse_mode="Markdown"
+)
 
 
 # ---------- CONTACT ----------
