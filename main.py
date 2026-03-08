@@ -301,6 +301,7 @@ def admin(m):
 
     bot.send_message(m.chat.id, "Admin panel", reply_markup=kb)
 
+
 @bot.message_handler(func=lambda m: m.text == "📅 Today bookings")
 def today(m):
 
