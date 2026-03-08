@@ -371,14 +371,20 @@ def tomorrow(m):
 
 # ---------- INCOME ----------
 
-@bot.message_handler(func=lambda m: m.text == "Income")
+# ---------- INCOME ----------
+
+@bot.message_handler(func=lambda m: m.text == "💰 Income")
 def income(m):
 
     bookings = load_bookings()
 
     total = sum(i["price"] for i in bookings)
 
-    bot.send_message(m.chat.id,f"💰 Total income: ${total}")
+    bot.send_message(
+        m.chat.id,
+        f"💰 Total income: ${total}"
+    )
 
+if __name__ == "__main__":
+    bot.infinity_polling(skip_pending=True)
 
-bot.infinity_polling(skip_pending=True)
