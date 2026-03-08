@@ -288,7 +288,7 @@ f"""
 
 # ---------- ADMIN PANEL ----------
 
-@bot.message_handler(func=lambda m: m.text == "⚙ Admin panel")
+@bot.message_handler(func=lambda m: m.text == "⚙️ Admin panel")
 def admin(m):
 
     if m.chat.id != ADMIN_ID:
@@ -296,18 +296,40 @@ def admin(m):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
     kb.add("📅 Today bookings")
-    kb.add("📆 Tomorrow bookings")
+    kb.add("📅 Tomorrow bookings")
     kb.add("💰 Income")
 
-    bot.send_message(m.chat.id,"Admin panel",reply_markup=kb)
+    bot.send_message(m.chat.id, "Admin panel", reply_markup=kb)
 
 @bot.message_handler(func=lambda m: m.text == "📅 Today bookings")
 def today(m):
 
-    bot.send_message(
-        m.chat.id,
-        "Today bookings feature coming soon"
-    )
+    if m.chat.id != ADMIN_ID:
+        return
+
+    data = load_bookings()
+    today = datetime.now().strftime("%b %d")
+
+    result = ""
+
+    for b in data:
+        if b["date"] == today:
+            result += f"""
+🧹 {b['cleaning']}
+🏠 {b['bedrooms']} bedrooms
+📅 {b['date']}
+💰 ${b['price']}
+📍 {b['address']}
+👤 {b['name']}
+📞 {b['phone']}
+
+────────────
+"""
+
+    if result == "":
+        result = "No bookings today"
+
+    bot.send_message(m.chat.id, result)
 
 @bot.message_handler(func=lambda m: m.text == "📆 Tomorrow bookings")
 def tomorrow(m):
