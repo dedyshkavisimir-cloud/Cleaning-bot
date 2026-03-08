@@ -34,6 +34,8 @@ def main_menu(user):
     kb.add("Book cleaning")
     kb.add("Prices","Contact")
 
+return kb
+
 @bot.message_handler(func=lambda m: m.text == "Prices")
 def prices_menu(m):
 
@@ -55,7 +57,7 @@ Move out cleaning
 2 bedrooms $250
 3 bedrooms $300
 """
-)
+    )
 
 @bot.message_handler(func=lambda m: m.text == "Contact")
 def contact(m):
@@ -68,7 +70,7 @@ Cleaning Pros Team
 Phone: 2532020979
 Email: manager@excellentsolution.online
 """
-)
+    )
 
     if user == ADMIN_ID:
         kb.add("Admin panel")
