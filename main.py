@@ -169,7 +169,7 @@ def client_name(m):
 # ---------- EXTRAS ----------
 
 @bot.message_handler(func=lambda m: m.chat.id in user_data and "name" not in user_data[m.chat.id])
-def extras(m):
+def client_name(m):
 
     user_data[m.chat.id]["name"] = m.text
     user_data[m.chat.id]["extras"] = []
@@ -204,7 +204,10 @@ def extras_done(m):
     if m.chat.id not in user_data:
         return
 
-    bot.send_message(m.chat.id,"Send address")
+    bot.send_message(
+        m.chat.id,
+        "Send address"
+    )
 
 
 # ---------- ADDRESS ----------
