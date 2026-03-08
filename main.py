@@ -6,7 +6,12 @@ import json
 TOKEN = "8695031161:AAFqAoGy2m14wnLOjuEywRG5FSKs77GiJRI"
 ADMIN_ID = 146998462
 
+import time
+
 bot = telebot.TeleBot(TOKEN)
+
+bot.remove_webhook()
+time.sleep(1)
 
 user_data = {}
 
