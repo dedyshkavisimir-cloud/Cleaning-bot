@@ -16,6 +16,8 @@ prices = {
     "Move out cleaning": {"1":200,"2":250,"3":300}
 }
 
+# ---------- STORAGE ----------
+
 def load_bookings():
     try:
         with open("bookings.json") as f:
@@ -27,58 +29,22 @@ def save_bookings(data):
     with open("bookings.json","w") as f:
         json.dump(data,f,indent=2)
 
+# ---------- MENU ----------
+
 def main_menu(user):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
     kb.add("🧹 Book cleaning")
-    kb.add("💲 Prices", "📞 Contact")
+    kb.add("💰 Prices","📞 Contact")
 
     if user == ADMIN_ID:
         kb.add("⚙ Admin panel")
 
     return kb
 
-@bot.message_handler(func=lambda m: m.text == "Prices")
-def prices_menu(m):
 
-    bot.send_message(
-        m.chat.id,
-"""
-Regular cleaning
-1 bedroom $120
-2 bedrooms $150
-3 bedrooms $180
-
-Deep cleaning
-1 bedroom $180
-2 bedrooms $220
-3 bedrooms $260
-
-Move out cleaning
-1 bedroom $200
-2 bedrooms $250
-3 bedrooms $300
-"""
-    )
-
-@bot.message_handler(func=lambda m: m.text == "Contact")
-def contact(m):
-
-    bot.send_message(
-        m.chat.id,
-"""
-Cleaning Pros Team
-
-Phone: 2532020979
-Email: manager@excellentsolution.online
-"""
-    )
-
-    if user == ADMIN_ID:
-        kb.add("Admin panel")
-
-    return kb
+# ---------- START ----------
 
 @bot.message_handler(commands=["start"])
 def start(m):
@@ -89,7 +55,57 @@ def start(m):
         reply_markup=main_menu(m.chat.id)
     )
 
-@bot.message_handler(func=lambda m: m.text == "Book cleaning")
+
+# ---------- PRICES ----------
+
+@bot.message_handler(func=lambda m: m.text == "💰 Prices")
+def prices_menu(m):
+
+    bot.send_message(
+        m.chat.id,
+"""
+💰 CLEANING PRICES
+
+🧹 Regular cleaning
+• 1 bedroom — $120
+• 2 bedrooms — $150
+• 3 bedrooms — $180
+
+✨ Deep cleaning
+• 1 bedroom — $180
+• 2 bedrooms — $220
+• 3 bedrooms — $260
+
+🚚 Move out cleaning
+• 1 bedroom — $200
+• 2 bedrooms — $250
+• 3 bedrooms — $300
+"""
+    )
+
+
+# ---------- CONTACT ----------
+
+@bot.message_handler(func=lambda m: m.text == "📞 Contact")
+def contact(m):
+
+    bot.send_message(
+        m.chat.id,
+"""
+📞 Cleaning Pros Team
+
+Phone:
+253-202-0979
+
+Email:
+manager@excellentsolution.online
+"""
+    )
+
+
+# ---------- BOOK CLEANING ----------
+
+@bot.message_handler(func=lambda m: m.text == "🧹 Book cleaning")
 def cleaning_type(m):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -97,7 +113,14 @@ def cleaning_type(m):
     for i in prices:
         kb.add(i)
 
-    bot.send_message(m.chat.id,"Choose cleaning type",reply_markup=kb)
+    bot.send_message(
+        m.chat.id,
+        "🧹 Choose cleaning type",
+        reply_markup=kb
+    )
+
+
+# ---------- BEDROOMS ----------
 
 @bot.message_handler(func=lambda m: m.text in prices)
 def bedrooms(m):
@@ -107,7 +130,10 @@ def bedrooms(m):
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
     kb.add("1","2","3")
 
-    bot.send_message(m.chat.id,"Bedrooms?",reply_markup=kb)
+    bot.send_message(m.chat.id,"How many bedrooms?",reply_markup=kb)
+
+
+# ---------- DATE ----------
 
 @bot.message_handler(func=lambda m: m.text in ["1","2","3"])
 def choose_date(m):
@@ -124,81 +150,50 @@ def choose_date(m):
     for i in range(1,4):
         kb.add((today + timedelta(days=i)).strftime("%b %d"))
 
-    bot.send_message(m.chat.id,"Choose date",reply_markup=kb)
+    bot.send_message(m.chat.id,"Choose cleaning date",reply_markup=kb)
+
+
+# ---------- NAME ----------
 
 @bot.message_handler(func=lambda m: m.chat.id in user_data and "date" not in user_data[m.chat.id])
-def extras(m):
+def client_name(m):
 
     user_data[m.chat.id]["date"] = m.text
-    user_data[m.chat.id]["step"] = "name"
 
     bot.send_message(
         m.chat.id,
         "Please enter your name"
     )
-@bot.message_handler(func=lambda m: m.chat.id in user_data and user_data[m.chat.id].get("step") == "name")
-def client_name(m):
 
-    user_data[m.chat.id]["name"] = m.text
-    user_data[m.chat.id]["step"] = "extras"
 
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("Inside fridge","Inside oven")
-    kb.add("Inside cabinets","Pet hair")
-    kb.add("Done")
-
-    user_data[m.chat.id]["extras"] = []
-
-    bot.send_message(
-        m.chat.id,
-        "Select extras (you can choose multiple). Press DONE when finished.",
-        reply_markup=kb
-    )
+# ---------- EXTRAS ----------
 
 @bot.message_handler(func=lambda m: m.chat.id in user_data and "name" not in user_data[m.chat.id])
-def client_name(m):
+def extras(m):
 
     user_data[m.chat.id]["name"] = m.text
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("Inside fridge","Inside oven")
-    kb.add("Inside cabinets","Pet hair")
-    kb.add("Done")
-
-    user_data[m.chat.id]["extras"] = []
+    kb.add("Inside fridge","Inside oven","No extras")
 
     bot.send_message(
         m.chat.id,
-        "Select extras (you can choose multiple). Press DONE when finished.",
+        "Extras?",
         reply_markup=kb
     )
 
-@bot.message_handler(func=lambda m: m.text in ["Inside fridge","Inside oven","Inside cabinets","Pet hair"])
-def add_extra(m):
 
-    user_data[m.chat.id]["extras"].append(m.text)
-
-    bot.send_message(
-        m.chat.id,
-        f"{m.text} added. Select more or press DONE."
-    )
-
-@bot.message_handler(func=lambda m: m.text == "Done")
-def extras_done(m):
-
-    bot.send_message(
-        m.chat.id,
-        "Send address"
-    )
+# ---------- ADDRESS ----------
 
 @bot.message_handler(func=lambda m: m.text in ["Inside fridge","Inside oven","No extras"])
 def address(m):
 
-    user_data[m.chat.id]["address"] = m.text
-
-    bot.send_message(m.chat.id,"Send phone number")
+    user_data[m.chat.id]["extras"] = m.text
 
     bot.send_message(m.chat.id,"Send address")
+
+
+# ---------- PHONE ----------
 
 @bot.message_handler(func=lambda m: m.chat.id in user_data and "address" not in user_data[m.chat.id])
 def phone(m):
@@ -206,6 +201,9 @@ def phone(m):
     user_data[m.chat.id]["address"] = m.text
 
     bot.send_message(m.chat.id,"Send phone number")
+
+
+# ---------- FINISH ----------
 
 @bot.message_handler(func=lambda m: m.chat.id in user_data and "phone" not in user_data[m.chat.id])
 def finish(m):
@@ -228,25 +226,30 @@ def finish(m):
     bot.send_message(
         ADMIN_ID,
 f"""
-NEW CLEANING REQUEST
+🆕 NEW CLEANING REQUEST
 
-Cleaning: {d['cleaning']}
-Bedrooms: {d['bedrooms']}
-Price: ${d['price']}
+👤 Client: {d['name']}
+📞 Phone: {d['phone']}
 
-Date: {d['date']}
-Extras: {", ".join(d['extras'])}
+🧹 Service: {d['cleaning']}
+🛏 Bedrooms: {d['bedrooms']}
+📅 Date: {d['date']}
 
-Address: {d['address']}
-Phone: {d['phone']}
+✨ Extras: {d['extras']}
 
-Client: {d['name']}
+📍 Address:
+{d['address']}
+
+💰 Price: ${d['price']}
 """
 )
 
     del user_data[m.chat.id]
 
-@bot.message_handler(func=lambda m: m.text == "Admin panel")
+
+# ---------- ADMIN PANEL ----------
+
+@bot.message_handler(func=lambda m: m.text == "⚙ Admin panel")
 def admin(m):
 
     if m.chat.id != ADMIN_ID:
@@ -257,6 +260,9 @@ def admin(m):
 
     bot.send_message(m.chat.id,"Admin panel",reply_markup=kb)
 
+
+# ---------- TODAY ----------
+
 @bot.message_handler(func=lambda m: m.text == "Today bookings")
 def today(m):
 
@@ -264,13 +270,16 @@ def today(m):
 
     today = datetime.now().strftime("%b %d")
 
-    text = "TODAY BOOKINGS\n\n"
+    text = "📅 TODAY BOOKINGS\n\n"
 
     for i in bookings:
         if i["date"] == today:
-            text += f"{i['name']} ${i['price']}\n"
+            text += f"{i['name']} — ${i['price']}\n"
 
     bot.send_message(m.chat.id,text)
+
+
+# ---------- INCOME ----------
 
 @bot.message_handler(func=lambda m: m.text == "Income")
 def income(m):
@@ -279,6 +288,7 @@ def income(m):
 
     total = sum(i["price"] for i in bookings)
 
-    bot.send_message(m.chat.id,f"Total income: ${total}")
+    bot.send_message(m.chat.id,f"💰 Total income: ${total}")
+
 
 bot.infinity_polling()
