@@ -293,7 +293,7 @@ f"""
 
 # ---------- ADMIN PANEL ----------
 
-@bot.message_handler(func=lambda m: m.text == "⚙️ Admin panel")
+@bot.message_handler(func=lambda m: "Admin panel" in m.text)
 def admin(m):
 
     if m.chat.id != ADMIN_ID:
