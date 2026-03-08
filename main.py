@@ -172,15 +172,39 @@ def client_name(m):
 def extras(m):
 
     user_data[m.chat.id]["name"] = m.text
+    user_data[m.chat.id]["extras"] = []
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("Inside fridge","Inside oven","No extras")
+    kb.add("Inside fridge","Inside oven")
+    kb.add("Inside cabinets","Pet hair")
+    kb.add("Done")
 
     bot.send_message(
         m.chat.id,
-        "Extras?",
+        "Select extras (you can choose several). Press DONE when finished.",
         reply_markup=kb
     )
+    
+@bot.message_handler(func=lambda m: m.text in ["Inside fridge","Inside oven","Inside cabinets","Pet hair"])
+def add_extra(m):
+
+    if m.chat.id not in user_data:
+        return
+
+    user_data[m.chat.id]["extras"].append(m.text)
+
+    bot.send_message(
+        m.chat.id,
+        f"{m.text} added. Select more or press DONE."
+    )
+
+@bot.message_handler(func=lambda m: m.text == "Done")
+def extras_done(m):
+
+    if m.chat.id not in user_data:
+        return
+
+    bot.send_message(m.chat.id,"Send address")
 
 
 # ---------- ADDRESS ----------
@@ -235,7 +259,7 @@ f"""
 🛏 Bedrooms: {d['bedrooms']}
 📅 Date: {d['date']}
 
-✨ Extras: {d['extras']}
+✨ Extras: {", ".join(d['extras'])}
 
 📍 Address:
 {d['address']}
@@ -256,9 +280,16 @@ def admin(m):
         return
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("Today bookings","Income")
+    kb.add("📅 Today bookings")
+    kb.add("💰 Income")
 
     bot.send_message(m.chat.id,"Admin panel",reply_markup=kb)
+
+@bot.message_handler(func=lambda m: m.text == "📅 Today bookings")
+def today(m):
+
+@bot.message_handler(func=lambda m: m.text == "💰 Income")
+def income(m):
 
 
 # ---------- TODAY ----------
