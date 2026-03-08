@@ -130,11 +130,30 @@ def choose_date(m):
 def extras(m):
 
     user_data[m.chat.id]["date"] = m.text
+    user_data[m.chat.id]["step"] = "name"
 
     bot.send_message(
         m.chat.id,
         "Please enter your name"
-    ) 
+    )
+@bot.message_handler(func=lambda m: m.chat.id in user_data and user_data[m.chat.id].get("step") == "name")
+def client_name(m):
+
+    user_data[m.chat.id]["name"] = m.text
+    user_data[m.chat.id]["step"] = "extras"
+
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb.add("Inside fridge","Inside oven")
+    kb.add("Inside cabinets","Pet hair")
+    kb.add("Done")
+
+    user_data[m.chat.id]["extras"] = []
+
+    bot.send_message(
+        m.chat.id,
+        "Select extras (you can choose multiple). Press DONE when finished.",
+        reply_markup=kb
+    )
 
 @bot.message_handler(func=lambda m: m.chat.id in user_data and "name" not in user_data[m.chat.id])
 def client_name(m):
