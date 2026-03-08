@@ -150,7 +150,7 @@ def choose_date(m):
     for i in range(1,4):
         kb.add((today + timedelta(days=i)).strftime("%b %d"))
 
-@bot.send_message(m.chat.id,"Choose cleaning date",reply_markup=kb)
+    bot.send_message(m.chat.id,"Choose cleaning date",reply_markup=kb)
 
 
 # ---------- NAME ----------
