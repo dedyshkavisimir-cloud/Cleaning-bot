@@ -296,6 +296,7 @@ def admin(m):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
     kb.add("📅 Today bookings")
+    kb.add("📆 Tomorrow bookings")
     kb.add("💰 Income")
 
     bot.send_message(m.chat.id,"Admin panel",reply_markup=kb)
@@ -307,6 +308,37 @@ def today(m):
         m.chat.id,
         "Today bookings feature coming soon"
     )
+
+@bot.message_handler(func=lambda m: m.text == "📆 Tomorrow bookings")
+def tomorrow(m):
+
+    if m.chat.id != ADMIN_ID:
+        return
+
+    data = load_bookings()
+
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime("%b %d")
+
+    result = ""
+
+    for b in data:
+        if b["date"] == tomorrow:
+            result += f"""
+🧹 {b['cleaning']}
+🏠 {b['bedrooms']} bedrooms
+📅 {b['date']}
+💰 ${b['price']}
+📍 {b['address']}
+👤 {b['name']}
+📞 {b['phone']}
+
+────────────
+"""
+
+    if result == "":
+        result = "No bookings for tomorrow"
+
+    bot.send_message(m.chat.id, result)
 
 @bot.message_handler(func=lambda m: m.text == "💰 Income")
 def income(m):
