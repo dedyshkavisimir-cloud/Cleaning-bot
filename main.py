@@ -247,7 +247,7 @@ def save_manual_date(m):
 
 # ---------- FLOW HANDLER ----------
 
-@bot.message_handler(func=lambda m: m.chat.id in user_data)
+@bot.message_handler(func=lambda m: m.chat.id in user_data and m.text not in ["💰 Prices","📞 Contact","🧹 Book cleaning","⚙ Admin panel"])
 def flow(m):
 
     d = user_data[m.chat.id]
