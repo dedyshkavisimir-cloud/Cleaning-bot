@@ -149,32 +149,7 @@ def bedrooms(m):
         reply_markup=kb
     )
 
-# ---------- DATE ----------
 
-if step == "date":
-
-    d["date"] = m.text
-
-    bot.send_message(
-        m.chat.id,
-        f"📅 Date selected: {m.text}"
-    )
-
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("Inside oven")
-    kb.add("Inside fridge")
-    kb.add("Windows")
-    kb.add("Done")
-
-    bot.send_message(
-        m.chat.id,
-        "✨ Select extras (you can choose several).\nPress DONE when finished.",
-        reply_markup=kb
-    )
-
-    d["extras"] = []
-    d["step"] = "extras"
-    return
 
 @bot.message_handler(func=lambda m: m.text in ["1 Bedroom","2 Bedrooms","3 Bedrooms"])
 def choose_date(m):
@@ -238,10 +213,7 @@ def save_manual_date(m):
 
 # ---------- FLOW HANDLER ----------
 
-@bot.message_handler(func=lambda m: m.chat.id in user_data and user_data[m.chat.id].get("step") in ["extras","name","phone","address"])
-def flow(m):
-
-    @bot.message_handler(content_types=["text"])
+@bot.message_handler(content_types=["text"])
 def flow(m):
 
     if m.chat.id not in user_data:
@@ -250,14 +222,34 @@ def flow(m):
     d = user_data[m.chat.id]
     step = d.get("step")
 
-    # игнорируем команды меню
     if m.text in ["💰 Prices","📞 Contact","🧹 Book cleaning","⚙ Admin panel"]:
         return
 
-    # если бот ждёт дату — сюда не заходим
+    # DATE
     if step == "date":
+
+        d["date"] = m.text
+
+        bot.send_message(m.chat.id, f"📅 Date selected: {m.text}")
+
+        kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        kb.add("Inside oven")
+        kb.add("Inside fridge")
+        kb.add("Windows")
+        kb.add("Done")
+
+        bot.send_message(
+            m.chat.id,
+            "✨ Select extras (you can choose several).\nPress DONE when finished.",
+            reply_markup=kb
+        )
+
+        d["extras"] = []
+        d["step"] = "extras"
         return
 
+
+    # EXTRAS
     if step == "extras":
 
         if m.text.lower() == "done":
@@ -274,6 +266,7 @@ def flow(m):
         return
 
 
+    # NAME
     if step == "name":
 
         d["name"] = m.text
@@ -284,6 +277,7 @@ def flow(m):
         return
 
 
+    # PHONE
     if step == "phone":
 
         d["phone"] = m.text
@@ -294,24 +288,22 @@ def flow(m):
         return
 
 
+    # ADDRESS
     if step == "address":
 
-    d["address"] = m.text
+        d["address"] = m.text
 
-    bookings = load_bookings()
+        bookings = load_bookings()
 
-    order_id = len(bookings) + 1
-    d["order_id"] = order_id
+        order_id = len(bookings) + 1
+        d["order_id"] = order_id
 
-    bookings.append(d)
-    save_bookings(bookings)
-    
+        bookings.append(d)
+        save_bookings(bookings)
 
         bot.send_message(
             ADMIN_ID,
 f"""
-🆕 NEW CLEANING REQUEST
-
 🧾 ORDER #{d['order_id']}
 
 👤 Client: {d['name']}
@@ -328,13 +320,13 @@ f"""
 
 💰 Price: ${d['price']}
 """
-)
+        )
 
         bot.send_message(
-    m.chat.id,
-    "✅ Booking confirmed! We will contact you shortly.",
-    reply_markup=main_menu(m.chat.id)
-)
+            m.chat.id,
+            "✅ Booking confirmed! We will contact you shortly.",
+            reply_markup=main_menu(m.chat.id)
+        )
 
         del user_data[m.chat.id]
         
