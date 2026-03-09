@@ -294,16 +294,23 @@ def flow(m):
 
     if step == "address":
 
-        d["address"] = m.text
+    d["address"] = m.text
 
-        bookings = load_bookings()
-        bookings.append(d)
-        save_bookings(bookings)
+    bookings = load_bookings()
+
+    order_id = len(bookings) + 1
+    d["order_id"] = order_id
+
+    bookings.append(d)
+    save_bookings(bookings)
+    
 
         bot.send_message(
             ADMIN_ID,
 f"""
 🆕 NEW CLEANING REQUEST
+
+🧾 ORDER #{d['order_id']}
 
 👤 Client: {d['name']}
 📞 Phone: {d['phone']}
@@ -319,13 +326,13 @@ f"""
 
 💰 Price: ${d['price']}
 """
-        )
+)
 
         bot.send_message(
-            m.chat.id,
-            "✅ Booking confirmed! We will contact you shortly.",
-            reply_markup=main_menu(m.chat.id)
-        )
+    m.chat.id,
+    "✅ Booking confirmed! We will contact you shortly.",
+    reply_markup=main_menu(m.chat.id)
+)
 
         del user_data[m.chat.id]
         
