@@ -332,7 +332,7 @@ parse_mode="Markdown"
 
 # ---------- ADMIN PANEL ----------
 
-@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "⚙ Admin panel")
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and "Admin panel" in m.text)
 def admin_panel(m):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -347,9 +347,9 @@ def admin_panel(m):
     )
 
 
-# ---------- TODAY BOOKINGS ----------
+# ---------- TODAY ----------
 
-@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "📅 Today bookings")
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and "Today bookings" in m.text)
 def today_bookings(m):
 
     bookings = load_bookings()
@@ -380,12 +380,12 @@ def today_bookings(m):
     if result == "":
         result = "No bookings today"
 
-    bot.send_message(m.chat.id, result)
+    bot.send_message(m.chat.id,result)
 
 
-# ---------- TOMORROW BOOKINGS ----------
+# ---------- TOMORROW ----------
 
-@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "📅 Tomorrow bookings")
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and "Tomorrow bookings" in m.text)
 def tomorrow_bookings(m):
 
     bookings = load_bookings()
@@ -416,7 +416,22 @@ def tomorrow_bookings(m):
     if result == "":
         result = "No bookings tomorrow"
 
-    bot.send_message(m.chat.id, result)
+    bot.send_message(m.chat.id,result)
+
+
+# ---------- INCOME ----------
+
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and "Income" in m.text)
+def income(m):
+
+    bookings = load_bookings()
+
+    total = sum(i["price"] for i in bookings)
+
+    bot.send_message(
+        m.chat.id,
+        f"💰 Total income: ${total}"
+    )
 
 
 # ---------- INCOME ----------
