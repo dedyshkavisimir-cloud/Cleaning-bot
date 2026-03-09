@@ -219,7 +219,17 @@ def select_date(m):
 
 @bot.message_handler(content_types=["text"])
 def flow(m):
-
+    
+    if m.text in [
+        "🧹 Book cleaning",
+        "💰 Prices",
+        "📞 Contact",
+        "⚙ Admin panel",
+        "📅 Today bookings",
+        "📅 Tomorrow bookings",
+        "💰 Income"
+    ]:
+        return
     if m.chat.id not in user_data:
         return
 
