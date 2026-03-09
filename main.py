@@ -235,14 +235,12 @@ def save_manual_date(m):
 
 # ---------- NAME ----------
 
-@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "name")
+@bot.message_handler(func=lambda m: m.chat.id in user_data and "name" not in user_data[m.chat.id])
 def client_name(m):
 
     user_data[m.chat.id]["name"] = m.text
 
-    bot.send_message(m.chat.id, "Enter your phone number")
-
-    user_data[m.chat.id]["step"] = "phone"
+    bot.send_message(m.chat.id, "Send address")
 
 
 # ---------- EXTRAS ----------
@@ -281,13 +279,13 @@ def add_extra(m):
 @bot.message_handler(func=lambda m: m.text == "Done")
 def extras_done(m):
 
-    if m.chat.id not in user_data:
-        return
+    if m.text == "Done":
 
-    bot.send_message(
-        m.chat.id,
-        "Send address"
-    )
+    bot.send_message(m.chat.id, "Enter your name")
+
+    user_data[m.chat.id]["step"] = "name"
+
+    return
 
 
 # ---------- ADDRESS ----------
@@ -295,29 +293,11 @@ def extras_done(m):
 @bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "address")
 def client_address(m):
 
-    d = user_data[m.chat.id]
+    user_data[m.chat.id]["address"] = m.text
 
-    d["address"] = m.text
+    bot.send_message(m.chat.id, "Enter your phone number")
 
-    data = load_bookings()
-    data.append(d)
-    save_bookings(data)
-
-    bot.send_message(ADMIN_ID, f"""
-🧹 New booking
-
-Cleaning: {d['cleaning']}
-Bedrooms: {d['bedrooms']}
-Date: {d['date']}
-
-Extras: {", ".join(d['extras'])}
-
-Address: {d['address']}
-""")
-
-    bot.send_message(m.chat.id, "✅ Booking confirmed!")
-
-    del user_data[m.chat.id]
+    user_data[m.chat.id]["step"] = "phone"
 
 
 # ---------- PHONE ----------
@@ -327,7 +307,7 @@ def client_phone(m):
 
     user_data[m.chat.id]["phone"] = m.text
 
-    bot.send_message(m.chat.id, "Enter your address")
+    bot.send_message(m.chat.id, "Send address")
 
     user_data[m.chat.id]["step"] = "address"
 
@@ -364,7 +344,7 @@ f"""
 🛏 Bedrooms: {d['bedrooms']}
 📅 Date: {d['date']}
 
-✨ Extras: {", ".join(d['extras'])}
+✨ Extras: {", ".join(d['extras']) if d['extras'] else "None"}
 
 📍 Address:
 {d['address']}
