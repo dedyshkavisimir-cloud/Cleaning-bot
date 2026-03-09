@@ -162,14 +162,14 @@ def choose_date(m):
 
     today = datetime.now()
 
-kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
-for i in range(1,4):
-    kb.add((today + timedelta(days=i)).strftime("%b %d"))
+    for i in range(1,4):
+        kb.add((today + timedelta(days=i)).strftime("%b %d"))
 
-kb.add("📆 Pick another date")
+    kb.add("📆 Pick another date")
 
-bot.send_message(m.chat.id, "Choose anorher date", reply_markup=kb)
+    bot.send_message(m.chat.id, "Choose anorher date", reply_markup=kb)
 
 
 @bot.message_handler(func=lambda m: m.text == "📆 Pick another date")
