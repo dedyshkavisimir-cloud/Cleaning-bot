@@ -279,13 +279,9 @@ def add_extra(m):
 @bot.message_handler(func=lambda m: m.text == "Done")
 def extras_done(m):
 
-    if m.text == "Done":
-
     bot.send_message(m.chat.id, "Enter your name")
 
     user_data[m.chat.id]["step"] = "name"
-
-    return
 
 
 # ---------- ADDRESS ----------
@@ -293,11 +289,38 @@ def extras_done(m):
 @bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "address")
 def client_address(m):
 
-    user_data[m.chat.id]["address"] = m.text
+    d = user_data[m.chat.id]
 
-    bot.send_message(m.chat.id, "Enter your phone number")
+    d["address"] = m.text
 
-    user_data[m.chat.id]["step"] = "phone"
+    bookings = load_bookings()
+    bookings.append(d)
+    save_bookings(bookings)
+
+    bot.send_message(
+        ADMIN_ID,
+f"""
+🆕 NEW CLEANING REQUEST
+
+👤 Client: {d['name']}
+📞 Phone: {d['phone']}
+
+🧹 Service: {d['cleaning']}
+🛏 Bedrooms: {d['bedrooms']}
+📅 Date: {d['date']}
+
+✨ Extras: {", ".join(d['extras']) if d['extras'] else "None"}
+
+📍 Address:
+{d['address']}
+
+💰 Price: ${d['price']}
+"""
+)
+
+    bot.send_message(m.chat.id,"✅ Booking confirmed!")
+
+    del user_data[m.chat.id]
 
 
 # ---------- PHONE ----------
