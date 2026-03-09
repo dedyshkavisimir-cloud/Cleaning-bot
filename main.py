@@ -210,7 +210,7 @@ def select_date(m):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
     kb.add("Inside oven","Inside fridge","Windows")
-    kb.add("Done")
+    kb.add("Done","Skip")
 
     bot.send_message(
         m.chat.id,
