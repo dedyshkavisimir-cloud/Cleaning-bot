@@ -20,6 +20,12 @@ prices = {
     "Move out cleaning": {"1":200,"2":250,"3":300}
 }
 
+extras_prices = {
+    "Inside oven": 25,
+    "Inside fridge": 40,
+    "Windows": 40
+}
+
 # ---------- STORAGE ----------
 
 def load_bookings():
@@ -401,10 +407,15 @@ def flow(m):
 
         d["extras"].append(m.text)
 
+        # добавляем цену extras
+        if m.text in extras_prices:
+            d["price"] += extras_prices[m.text]
+
         bot.send_message(
             m.chat.id,
-            f"✅ {m.text} added"
+            f"✅ {m.text} added (+${extras_prices.get(m.text,0)})"
         )
+
         return
 
 
