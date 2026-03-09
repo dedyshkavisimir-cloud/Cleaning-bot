@@ -177,10 +177,8 @@ def choose_date(m):
         reply_markup=kb
     )
 
-@bot.message_handler(func=lambda m: m.chat.id in user_data and m.text.startswith(("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")))
-def select_date(m):
 
-    @bot.message_handler(func=lambda m: m.chat.id in user_data and m.text.startswith(("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")))
+@bot.message_handler(func=lambda m: m.chat.id in user_data and m.text.startswith(("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")))
 def select_date(m):
 
     user_data[m.chat.id]["date"] = m.text
@@ -237,55 +235,38 @@ def save_manual_date(m):
         
 # ---------- NAME ----------
 
-@bot.message_handler(func=lambda m: m.chat.id in user_data and "name" not in user_data[m.chat.id])
+@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "name")
 def client_name(m):
 
     user_data[m.chat.id]["name"] = m.text
 
-    bot.send_message(m.chat.id, "Send address")
+    bot.send_message(m.chat.id, "Enter your phone number")
+
+    user_data[m.chat.id]["step"] = "phone"
 
 
 # ---------- EXTRAS ----------
 
 @bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "extras")
-def extras(m):
+def handle_extras(m):
+
+    d = user_data[m.chat.id]
 
     if m.text == "Done":
 
-        bot.send_message(m.chat.id, "Send address")
+        bot.send_message(m.chat.id, "Enter your name")
 
-        user_data[m.chat.id]["step"] = "address"
+        d["step"] = "name"
 
-        return
+    else:
 
-    user_data[m.chat.id]["extras"].append(m.text)
+        d["extras"].append(m.text)
 
-    bot.send_message(
-        m.chat.id,
-        f"{m.text} added. Select more or press DONE."
-    )
+        bot.send_message(
+            m.chat.id,
+            f"{m.text} added. Select more or press DONE."
+        )
     
-@bot.message_handler(func=lambda m: m.text in ["Inside fridge","Inside oven","Inside cabinets","Pet hair"])
-def add_extra(m):
-
-    if m.chat.id not in user_data:
-        return
-
-    user_data[m.chat.id]["extras"].append(m.text)
-
-    bot.send_message(
-        m.chat.id,
-        f"{m.text} added. Select more or press DONE."
-    )
-
-@bot.message_handler(func=lambda m: m.text == "Done")
-def extras_done(m):
-
-    bot.send_message(m.chat.id, "Enter your name")
-
-    user_data[m.chat.id]["step"] = "name"
-
-
 # ---------- ADDRESS ----------
 
 @bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "address")
@@ -335,50 +316,6 @@ def client_phone(m):
     bot.send_message(m.chat.id, "Send address")
 
     user_data[m.chat.id]["step"] = "address"
-
-
-# ---------- FINISH ----------
-
-@bot.message_handler(func=lambda m: m.chat.id in user_data and "phone" not in user_data[m.chat.id])
-def finish(m):
-
-    d = user_data[m.chat.id]
-
-    d["phone"] = m.text
-    d["chat_id"] = m.chat.id
-
-    bookings = load_bookings()
-    bookings.append(d)
-    save_bookings(bookings)
-
-    bot.send_message(
-        m.chat.id,
-        "✅ Thank you! Your request has been sent.",
-        reply_markup=main_menu(m.chat.id)
-    )
-
-    bot.send_message(
-        ADMIN_ID,
-f"""
-🆕 NEW CLEANING REQUEST
-
-👤 Client: {d['name']}
-📞 Phone: {d['phone']}
-
-🧹 Service: {d['cleaning']}
-🛏 Bedrooms: {d['bedrooms']}
-📅 Date: {d['date']}
-
-✨ Extras: {", ".join(d['extras']) if d['extras'] else "None"}
-
-📍 Address:
-{d['address']}
-
-💰 Price: ${d['price']}
-"""
-)
-
-    del user_data[m.chat.id]
 
 
 # ---------- ADMIN PANEL ----------
