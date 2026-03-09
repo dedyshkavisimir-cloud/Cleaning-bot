@@ -173,17 +173,21 @@ def choose_date(m):
 
     bot.send_message(
         m.chat.id,
-        f"Estimated price ${d['price']}\nChoose date",
+        f"💰 Estimated price: ${d['price']}\n\n📅 Choose cleaning date",
         reply_markup=kb
     )
 
 @bot.message_handler(func=lambda m: m.chat.id in user_data and m.text.startswith(("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")))
 def select_date(m):
 
+    @bot.message_handler(func=lambda m: m.chat.id in user_data and m.text.startswith(("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")))
+def select_date(m):
+
     user_data[m.chat.id]["date"] = m.text
 
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    bot.send_message(m.chat.id, f"📅 Date selected: {m.text}")
 
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
     kb.add("Inside oven")
     kb.add("Inside fridge")
     kb.add("Windows")
@@ -196,7 +200,6 @@ def select_date(m):
     )
 
     user_data[m.chat.id]["extras"] = []
-
     user_data[m.chat.id]["step"] = "extras"
 
 
