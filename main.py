@@ -349,41 +349,41 @@ def flow(m):
     # MANUAL DATE
     if step == "manual_date":
 
-    try:
+        try:
 
-        date = datetime.strptime(m.text,"%m-%d-%Y")
+            date = datetime.strptime(m.text,"%m-%d-%Y")
 
-        if date.date() < datetime.now().date():
+            if date.date() < datetime.now().date():
+
+                bot.send_message(
+                    m.chat.id,
+                    "❌ Date cannot be in the past"
+                )
+                return
+
+            d["date"] = m.text
+
+            kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            kb.add("Inside oven","Inside fridge","Windows")
+            kb.add("Done","Skip")
 
             bot.send_message(
                 m.chat.id,
-                "❌ Date cannot be in the past"
+                "✨ Select extra services",
+                reply_markup=kb
             )
-            return
 
-        d["date"] = m.text
+            d["extras"] = []
+            d["step"] = "extras"
 
-        kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        kb.add("Inside oven","Inside fridge","Windows")
-        kb.add("Done","Skip")
+        except:
 
-        bot.send_message(
-            m.chat.id,
-            "✨ Select extra services",
-            reply_markup=kb
-        )
+            bot.send_message(
+                m.chat.id,
+                "❌ Wrong format\nUse MM-DD-YYYY"
+            )
 
-        d["extras"] = []
-        d["step"] = "extras"
-
-    except:
-
-        bot.send_message(
-            m.chat.id,
-            "❌ Wrong format\nUse MM-DD-YYYY"
-        )
-
-    return
+        return
 
 
     # EXTRAS
