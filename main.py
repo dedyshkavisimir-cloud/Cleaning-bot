@@ -72,23 +72,23 @@ m.chat.id,
 ━━━━━━━━━━━━
 
 🧹 *Regular cleaning*
-• 1 bedroom — $120
-• 2 bedrooms — $150
-• 3 bedrooms — $180
+• 1 bedroom — $120  
+• 2 bedrooms — $150  
+• 3 bedrooms — $180  
 
 ━━━━━━━━━━━━
 
 ✨ *Deep cleaning*
-• 1 bedroom — $180
-• 2 bedrooms — $220
-• 3 bedrooms — $260
+• 1 bedroom — $180  
+• 2 bedrooms — $220  
+• 3 bedrooms — $260  
 
 ━━━━━━━━━━━━
 
 🚚 *Move out cleaning*
-• 1 bedroom — $200
-• 2 bedrooms — $250
-• 3 bedrooms — $300
+• 1 bedroom — $200  
+• 2 bedrooms — $250  
+• 3 bedrooms — $300  
 """,
 parse_mode="Markdown"
 )
@@ -103,8 +103,11 @@ m.chat.id,
 """
 📞 *Cleaning Pros Team*
 
-Phone:
+Phone  
 253-202-0979
+
+Email  
+manager@excellentsolution.online
 """,
 parse_mode="Markdown"
 )
@@ -164,7 +167,7 @@ def choose_date(m):
         kb.add((today + timedelta(days=i)).strftime("%b %d"))
 
     bot.send_message(
-        m.chat.id,
+m.chat.id,
 f"""
 💰 *Estimated price:* ${d['price']}
 
@@ -172,9 +175,9 @@ f"""
 
 📅 *Choose cleaning date*
 """,
-        reply_markup=kb,
-        parse_mode="Markdown"
-    )
+reply_markup=kb,
+parse_mode="Markdown"
+)
 
     d["step"] = "date"
 
@@ -199,18 +202,18 @@ def flow(m):
         kb.add("Done")
 
         bot.send_message(
-            m.chat.id,
-        """
-        ✨ *Select extra services*
+m.chat.id,
+"""
+✨ *Select extra services*
 
-        You can choose *multiple options*.
+You can choose *multiple options*
 
-        When finished press *Done*  
-        or skip extras by pressing *Done*.
-        """,
-        reply_markup=kb,
-        parse_mode="Markdown"
-        )
+Press *Done* when finished  
+or press *Done* to skip extras
+""",
+reply_markup=kb,
+parse_mode="Markdown"
+)
 
         d["extras"] = []
         d["step"] = "extras"
@@ -220,11 +223,13 @@ def flow(m):
     if step == "extras":
 
         if m.text == "Done":
+
             bot.send_message(
                 m.chat.id,
                 "👤 *Enter your name*",
                 parse_mode="Markdown"
             )
+
             d["step"] = "name"
             return
 
@@ -295,7 +300,7 @@ f"""
 
 ✨ *Extras:* {", ".join(d['extras']) if d['extras'] else "None"}
 
-📍 *Address:*
+📍 *Address*
 {d['address']}
 
 ━━━━━━━━━━━━
@@ -306,22 +311,22 @@ parse_mode="Markdown"
 )
 
         bot.send_message(
-            m.chat.id,
+m.chat.id,
 """
-✅ *Booking confirmed!*
+✅ *Booking confirmed*
 
 Our manager will contact you shortly.
 
 Thank you for choosing  
 *Cleaning Pros Team* 🧼
 """,
-            reply_markup=main_menu(m.chat.id),
-            parse_mode="Markdown"
-        )
+reply_markup=main_menu(m.chat.id),
+parse_mode="Markdown"
+)
 
         del user_data[m.chat.id]
 
-# ---------- ADMIN ----------
+# ---------- ADMIN PANEL ----------
 
 @bot.message_handler(func=lambda m: m.text == "⚙ Admin panel")
 def admin(m):
@@ -341,23 +346,10 @@ def admin(m):
         parse_mode="Markdown"
     )
 
-# ---------- INCOME ----------
-
-@bot.message_handler(func=lambda m: m.text == "💰 Income")
-def income(m):
-
-    bookings = load_bookings()
-
-    total = sum(i["price"] for i in bookings)
-
-    bot.send_message(
-        m.chat.id,
-        f"💰 *Total income:* ${total}",
-        parse_mode="Markdown"
-    )
+# ---------- TODAY ----------
 
 @bot.message_handler(func=lambda m: m.text == "📅 Today bookings")
-def today_bookings(m):
+def today(m):
 
     if m.chat.id != ADMIN_ID:
         return
@@ -369,6 +361,7 @@ def today_bookings(m):
     result = ""
 
     for b in data:
+
         if b["date"] == today:
 
             result += f"""
@@ -391,8 +384,10 @@ def today_bookings(m):
 
     bot.send_message(m.chat.id,result)
 
+# ---------- TOMORROW ----------
+
 @bot.message_handler(func=lambda m: m.text == "📅 Tomorrow bookings")
-def tomorrow_bookings(m):
+def tomorrow(m):
 
     if m.chat.id != ADMIN_ID:
         return
@@ -404,6 +399,7 @@ def tomorrow_bookings(m):
     result = ""
 
     for b in data:
+
         if b["date"] == tomorrow:
 
             result += f"""
@@ -425,6 +421,20 @@ def tomorrow_bookings(m):
         result = "No bookings tomorrow"
 
     bot.send_message(m.chat.id,result)
-    
+
+# ---------- INCOME ----------
+
+@bot.message_handler(func=lambda m: m.text == "💰 Income")
+def income(m):
+
+    bookings = load_bookings()
+
+    total = sum(i["price"] for i in bookings)
+
+    bot.send_message(
+        m.chat.id,
+        f"💰 *Total income:* ${total}",
+        parse_mode="Markdown"
+    )
 
 bot.infinity_polling(skip_pending=True)
