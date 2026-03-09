@@ -272,6 +272,9 @@ def handle_extras(m):
 @bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "address")
 def client_address(m):
 
+    if m.chat.id not in user_data:
+    return
+    
     d = user_data[m.chat.id]
 
     d["address"] = m.text
@@ -303,7 +306,7 @@ f"""
 
     bot.send_message(
     m.chat.id,
-    "✅ Booking confirmed!",
+    "✅ Booking confirmed! We will contact you shortly.",
     reply_markup=main_menu(m.chat.id)
 )
 
