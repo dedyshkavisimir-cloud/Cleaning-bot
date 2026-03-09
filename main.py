@@ -166,6 +166,8 @@ def choose_date(m):
     for i in range(1,4):
         kb.add((today + timedelta(days=i)).strftime("%b %d"))
 
+    kb.add("📅 Enter another date")
+
     bot.send_message(
 m.chat.id,
 f"""
@@ -183,7 +185,58 @@ parse_mode="Markdown"
 
    
     # DATE
-    if step == "date":
+if step == "date":
+
+    if m.text == "📅 Enter another date":
+
+        bot.send_message(
+            m.chat.id,
+            """
+📅 *Enter date manually*
+
+Format:
+MM-DD-YYYY
+
+Example:
+06-25-2026
+""",
+            parse_mode="Markdown"
+        )
+
+        d["step"] = "manual_date"
+        return
+
+    # выбрана дата из кнопок
+    d["date"] = m.text
+
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb.add("Inside oven","Inside fridge","Windows")
+    kb.add("Done")
+
+    bot.send_message(
+m.chat.id,
+"""
+✨ *Select extra services*
+
+You can choose *multiple options*
+
+Press *Done* when finished
+""",
+reply_markup=kb,
+parse_mode="Markdown"
+)
+
+    d["extras"] = []
+    d["step"] = "extras"
+    return
+
+    
+    # MANUAL DATE
+if step == "manual_date":
+
+    try:
+
+        date = datetime.strptime(m.text,"%m-%d-%Y")
 
         d["date"] = m.text
 
@@ -196,10 +249,9 @@ m.chat.id,
 """
 ✨ *Select extra services*
 
-You can choose *multiple options*
+You can choose multiple options
 
-Press *Done* when finished  
-or press *Done* to skip extras
+Press *Done* when finished
 """,
 reply_markup=kb,
 parse_mode="Markdown"
@@ -207,7 +259,15 @@ parse_mode="Markdown"
 
         d["extras"] = []
         d["step"] = "extras"
-        return
+
+    except:
+
+        bot.send_message(
+            m.chat.id,
+            "❌ Wrong format.\nUse MM-DD-YYYY\nExample: 06-25-2026"
+        )
+
+    return
 
     # EXTRAS
     if step == "extras":
