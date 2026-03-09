@@ -250,10 +250,21 @@ def save_manual_date(m):
 @bot.message_handler(func=lambda m: m.chat.id in user_data and user_data[m.chat.id].get("step") in ["extras","name","phone","address"])
 def flow(m):
 
+    @bot.message_handler(content_types=["text"])
+def flow(m):
+
+    if m.chat.id not in user_data:
+        return
+
     d = user_data[m.chat.id]
     step = d.get("step")
 
-    if not m.text:
+    # игнорируем команды меню
+    if m.text in ["💰 Prices","📞 Contact","🧹 Book cleaning","⚙ Admin panel"]:
+        return
+
+    # если бот ждёт дату — сюда не заходим
+    if step == "date":
         return
 
     if step == "extras":
