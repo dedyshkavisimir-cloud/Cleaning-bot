@@ -187,6 +187,8 @@ f"""
 
     d["step"] = "date"
 
+
+
 # ---------- FLOW ----------
 
 @bot.message_handler(content_types=["text"])
@@ -202,7 +204,7 @@ def flow(m):
 
     step = d["step"]
 
-    # DATE
+    # ----- DATE -----
     if step == "date":
 
         if m.text == "📅 Enter another date":
@@ -215,45 +217,39 @@ def flow(m):
             d["step"] = "manual_date"
             return
 
+        # пользователь выбрал одну из кнопок даты
         d["date"] = m.text
 
         kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        kb.add("Inside oven","Inside fridge","Windows")
+        kb.add("Inside oven", "Inside fridge", "Windows")
         kb.add("Done")
 
         bot.send_message(
-m.chat.id,
-"""
-✨ *Select extra services*
-
-You can choose multiple options
-
-Press *Done* when finished
-""",
-reply_markup=kb,
-parse_mode="Markdown"
-)
+            m.chat.id,
+            "✨ Select extra services (optional)",
+            reply_markup=kb
+        )
 
         d["extras"] = []
         d["step"] = "extras"
         return
 
-    # MANUAL DATE
+
+    # ----- MANUAL DATE -----
     if step == "manual_date":
 
         try:
-
-            datetime.strptime(m.text,"%m-%d-%Y")
+            datetime.strptime(m.text, "%m-%d-%Y")
 
             d["date"] = m.text
 
             kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            kb.add("Inside oven","Inside fridge","Windows")
+            kb.add("Inside oven", "Inside fridge", "Windows")
             kb.add("Done")
 
             bot.send_message(
                 m.chat.id,
-                "Select extras",
+                "✨ Select extra services",
                 reply_markup=kb
             )
 
@@ -261,7 +257,6 @@ parse_mode="Markdown"
             d["step"] = "extras"
 
         except:
-
             bot.send_message(
                 m.chat.id,
                 "❌ Wrong format\nUse MM-DD-YYYY"
@@ -269,7 +264,8 @@ parse_mode="Markdown"
 
         return
 
-    # EXTRAS
+
+    # ----- EXTRAS -----
     if step == "extras":
 
         if m.text == "Done":
@@ -290,20 +286,22 @@ parse_mode="Markdown"
         )
         return
 
-    # NAME
+
+    # ----- NAME -----
     if step == "name":
 
         d["name"] = m.text
 
         bot.send_message(
             m.chat.id,
-            "📞 Enter your phone number"
+            "📞 Enter your phone"
         )
 
         d["step"] = "phone"
         return
 
-    # PHONE
+
+    # ----- PHONE -----
     if step == "phone":
 
         d["phone"] = m.text
@@ -316,7 +314,8 @@ parse_mode="Markdown"
         d["step"] = "address"
         return
 
-    # ADDRESS
+
+    # ----- ADDRESS -----
     if step == "address":
 
         d["address"] = m.text
@@ -332,45 +331,33 @@ parse_mode="Markdown"
         extras = ", ".join(d["extras"]) if d["extras"] else "None"
 
         bot.send_message(
-ADMIN_ID,
-f"""
-🆕 *NEW CLEANING REQUEST*
+            ADMIN_ID,
+            f"""
+🧹 NEW CLEANING REQUEST
 
-━━━━━━━━━━━━
+Order #{order_id}
 
-🧾 Order #{order_id}
+Client: {d['name']}
+Phone: {d['phone']}
 
-👤 {d['name']}
-📞 {d['phone']}
+Service: {d['cleaning']}
+Bedrooms: {d['bedrooms']}
+Date: {d['date']}
 
-🧹 {d['cleaning']}
-🏠 {d['bedrooms']} bedrooms
-📅 {d['date']}
+Extras: {extras}
 
-✨ Extras: {extras}
+Address:
+{d['address']}
 
-📍 {d['address']}
-
-━━━━━━━━━━━━
-
-💰 Price: ${d['price']}
-""",
-parse_mode="Markdown"
-)
+Price: ${d['price']}
+"""
+        )
 
         bot.send_message(
-m.chat.id,
-"""
-✅ *Booking confirmed*
-
-Our manager will contact you shortly
-
-Thank you for choosing  
-*Cleaning Pros Team* 🧼
-""",
-reply_markup=main_menu(m.chat.id),
-parse_mode="Markdown"
-)
+            m.chat.id,
+            "✅ Booking confirmed!\nOur manager will contact you shortly.",
+            reply_markup=main_menu(m.chat.id)
+        )
 
         del user_data[m.chat.id]
 
