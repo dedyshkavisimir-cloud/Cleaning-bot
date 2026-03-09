@@ -172,12 +172,12 @@ def choose_date(m):
     kb.add("📆 Pick another date")
 
     bot.send_message(
-    m.chat.id,
-    f"💰 Estimated price: ${d['price']}\n\n📅 Choose cleaning date",
-    reply_markup=kb
-)
+        m.chat.id,
+        f"💰 Estimated price: ${d['price']}\n\n📅 Choose cleaning date",
+        reply_markup=kb
+    )
 
-user_data[m.chat.id]["step"] = "date"
+    user_data[m.chat.id]["step"] = "date"
 
 
 @bot.message_handler(func=lambda m: m.chat.id in user_data and "date" not in user_data[m.chat.id] and m.text.startswith(("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")))
