@@ -200,14 +200,16 @@ def flow(m):
 
         bot.send_message(
             m.chat.id,
-"""
-✨ *Select extras*
+        """
+        ✨ *Select extra services*
 
-You can choose several options  
-then press *Done*
-""",
-            reply_markup=kb,
-            parse_mode="Markdown"
+        You can choose *multiple options*.
+
+        When finished press *Done*  
+        or skip extras by pressing *Done*.
+        """,
+        reply_markup=kb,
+        parse_mode="Markdown"
         )
 
         d["extras"] = []
@@ -328,6 +330,8 @@ def admin(m):
         return
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb.add("📅 Today bookings")
+    kb.add("📅 Tomorrow bookings")
     kb.add("💰 Income")
 
     bot.send_message(
@@ -351,5 +355,76 @@ def income(m):
         f"💰 *Total income:* ${total}",
         parse_mode="Markdown"
     )
+
+@bot.message_handler(func=lambda m: m.text == "📅 Today bookings")
+def today_bookings(m):
+
+    if m.chat.id != ADMIN_ID:
+        return
+
+    data = load_bookings()
+
+    today = datetime.now().strftime("%b %d")
+
+    result = ""
+
+    for b in data:
+        if b["date"] == today:
+
+            result += f"""
+🧾 Order #{b['order_id']}
+
+👤 {b['name']}
+📞 {b['phone']}
+
+🧹 {b['cleaning']}
+🛏 {b['bedrooms']} bedrooms
+💰 ${b['price']}
+
+📍 {b['address']}
+
+────────────
+"""
+
+    if result == "":
+        result = "No bookings today"
+
+    bot.send_message(m.chat.id,result)
+
+@bot.message_handler(func=lambda m: m.text == "📅 Tomorrow bookings")
+def tomorrow_bookings(m):
+
+    if m.chat.id != ADMIN_ID:
+        return
+
+    data = load_bookings()
+
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime("%b %d")
+
+    result = ""
+
+    for b in data:
+        if b["date"] == tomorrow:
+
+            result += f"""
+🧾 Order #{b['order_id']}
+
+👤 {b['name']}
+📞 {b['phone']}
+
+🧹 {b['cleaning']}
+🛏 {b['bedrooms']} bedrooms
+💰 ${b['price']}
+
+📍 {b['address']}
+
+────────────
+"""
+
+    if result == "":
+        result = "No bookings tomorrow"
+
+    bot.send_message(m.chat.id,result)
+    
 
 bot.infinity_polling(skip_pending=True)
