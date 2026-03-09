@@ -152,13 +152,15 @@ def bedrooms(m):
 
 # ---------- DATE ----------
 
-@bot.message_handler(func=lambda m: m.text in ["1","2","3"])
+@bot.message_handler(func=lambda m: m.text in ["1 Bedroom","2 Bedrooms","3 Bedrooms"])
 def choose_date(m):
 
     d = user_data[m.chat.id]
 
-    d["bedrooms"] = m.text
-    d["price"] = prices[d["cleaning"]][m.text]
+    bedrooms = m.text.split()[0]
+
+    d["bedrooms"] = bedrooms
+    d["price"] = prices[d["cleaning"]][bedrooms]
 
     today = datetime.now()
 
@@ -169,7 +171,11 @@ def choose_date(m):
 
     kb.add("📆 Pick another date")
 
-    bot.send_message(m.chat.id, "Choose anorher date", reply_markup=kb)
+    bot.send_message(
+        m.chat.id,
+        f"Estimated price ${d['price']}\nChoose date",
+        reply_markup=kb
+    )
 
 @bot.message_handler(func=lambda m: m.chat.id in user_data and m.text.startswith(("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")))
 def select_date(m):
@@ -279,11 +285,12 @@ def client_address(m):
 
     user_data[m.chat.id]["address"] = m.text
 
-    save_booking(user_data[m.chat.id])
+    data = load_bookings()
+    data.append(user_data[m.chat.id])
+    save_bookings(data)
 
     bot.send_message(m.chat.id, "✅ Booking confirmed!")
-
-    del user_data[m.chat.id]
+del user_data[m.chat.id]
 
 
 # ---------- PHONE ----------
