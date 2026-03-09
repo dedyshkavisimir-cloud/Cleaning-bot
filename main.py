@@ -178,14 +178,16 @@ def choose_date(m):
     )
 
 
-@bot.message_handler(func=lambda m: m.chat.id in user_data and "date" not in user_data[m.chat.id] and m.text.startswith(("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")))
+@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "date")
 def select_date(m):
+
+    if m.chat.id not in user_data:
+        return
 
     user_data[m.chat.id]["date"] = m.text
 
     bot.send_message(m.chat.id, f"📅 Date selected: {m.text}")
-    bot.send_chat_action(m.chat.id, "typing")
-    
+
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
     kb.add("Inside oven")
     kb.add("Inside fridge")
