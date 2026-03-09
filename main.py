@@ -231,40 +231,34 @@ def flow(m):
     step = d["step"]
 
     # DATE
-    if step == "date":
+    # DATE
+if step == "date":
 
-        if m.text == "📅 Enter another date":
-
-            bot.send_message(
-                m.chat.id,
-                "Enter date MM-DD-YYYY\nExample: 06-25-2026"
-            )
-
-            d["step"] = "manual_date"
-            return
-
-        d["date"] = m.text
-
-        kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        kb.add("Inside oven","Inside fridge","Windows")
-        kb.add("Done")
+    if m.text == "📅 Enter another date":
 
         bot.send_message(
-m.chat.id,
-"""
-✨ *Select extra services*
+            m.chat.id,
+            "Enter date MM-DD-YYYY\nExample: 06-25-2026"
+        )
 
-You can choose multiple options
-
-Press *Done* when finished
-""",
-reply_markup=kb,
-parse_mode="Markdown"
-)
-
-        d["extras"] = []
-        d["step"] = "extras"
+        d["step"] = "manual_date"
         return
+
+    d["date"] = m.text
+
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb.add("Inside oven","Inside fridge","Windows")
+    kb.add("Done")
+
+    bot.send_message(
+        m.chat.id,
+        "✨ Select extra services",
+        reply_markup=kb
+    )
+
+    d["extras"] = []
+    d["step"] = "extras"
+    return
 
     # MANUAL DATE
     if step == "manual_date":
