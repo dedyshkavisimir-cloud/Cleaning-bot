@@ -290,7 +290,7 @@ def client_address(m):
     save_bookings(data)
 
     bot.send_message(m.chat.id, "✅ Booking confirmed!")
-del user_data[m.chat.id]
+    del user_data[m.chat.id]
 
 
 # ---------- PHONE ----------
