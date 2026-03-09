@@ -251,7 +251,7 @@ def save_manual_date(m):
 
 # ---------- FLOW HANDLER ----------
 
-@bot.message_handler(func=lambda m: m.chat.id in user_data and user_data[m.chat.id].get("step") in ["extras","name","phone","address"])
+@bot.message_handler(func=lambda m: m.chat.id in user_data and user_data[m.chat.id].get("step") in ["extras","name","phone","address"] and not m.text.startswith(("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")))
 def flow(m):
 
     d = user_data[m.chat.id]
