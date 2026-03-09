@@ -177,8 +177,6 @@ def choose_date(m):
         reply_markup=kb
     )
 
-    user_data[m.chat.id]["step"] = "date"
-
 
 @bot.message_handler(func=lambda m: m.chat.id in user_data and "date" not in user_data[m.chat.id] and m.text.startswith(("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")))
 def select_date(m):
