@@ -162,12 +162,47 @@ def choose_date(m):
 
     today = datetime.now()
 
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
-    for i in range(1,4):
-        kb.add((today + timedelta(days=i)).strftime("%b %d"))
+for i in range(1,4):
+    kb.add((today + timedelta(days=i)).strftime("%b %d"))
 
-    bot.send_message(m.chat.id,"Choose cleaning date",reply_markup=kb)
+kb.add("📆 Pick another date")
+
+bot.send_message(m.chat.id, "Choose anorher date", reply_markup=kb)
+
+
+@bot.message_handler(func=lambda m: m.text == "📆 Pick another date")
+def manual_date(m):
+
+    bot.send_message(
+        m.chat.id,
+        "Enter date in format:\n\nMM/DD/YYYY\n\nExample: 06/25/2026"
+    )
+
+    user_data[m.chat.id]["step"] = "manual_date"
+
+@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "manual_date")
+def save_manual_date(m):
+
+    try:
+        d = datetime.strptime(m.text, "%m/%d/%Y")
+
+        user_data[m.chat.id]["date"] = m.text
+
+        bot.send_message(m.chat.id, f"📅 Date selected: {m.text}")
+
+        bot.send_message(m.chat.id, "Enter your name")
+
+        user_data[m.chat.id]["step"] = "name"
+
+        # дальше можно идти к адресу или следующему шагу
+
+    except:
+        bot.send_message(
+            m.chat.id,
+            "❌ Wrong format\n\nUse MM/DD/YYYY\nExample: 06/25/2026"
+        )
 
 
 # ---------- NAME ----------
