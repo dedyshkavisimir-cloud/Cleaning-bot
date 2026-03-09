@@ -176,6 +176,7 @@ def choose_date(m):
         f"💰 Estimated price: ${d['price']}\n\n📅 Choose cleaning date",
         reply_markup=kb
     )
+    user_data[m.chat.id]["step"] = "date"
 
 
 @bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "date")
