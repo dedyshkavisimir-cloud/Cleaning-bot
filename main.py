@@ -247,11 +247,13 @@ def save_manual_date(m):
 
 # ---------- FLOW HANDLER ----------
 
-@bot.message_handler(content_types=["text"])
+# ---------- FLOW HANDLER ----------
+
+@bot.message_handler(func=lambda m: m.chat.id in user_data)
 def flow(m):
 
-    if m.chat.id not in user_data:
-        return
+    d = user_data[m.chat.id]
+    step = d.get("step")
 
     if m.text in ["💰 Prices","📞 Contact","🧹 Book cleaning","⚙ Admin panel"]:
         return
