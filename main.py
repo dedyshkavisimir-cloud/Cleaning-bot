@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import json
 import time
 
-TOKEN = "PASTE_TOKEN"
+TOKEN = "8695031161:AAFqAoGy2m14wnLOjuEywRG5FSKs77GiJRI"
 ADMIN_ID = 146998462
 
 bot = telebot.TeleBot(TOKEN)
