@@ -306,10 +306,13 @@ def client_phone(m):
     
 # ---------- ADDRESS ----------
 
-@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "address")
+@bot.message_handler(content_types=["text"])
 def client_address(m):
 
     if m.chat.id not in user_data:
+        return
+
+    if user_data[m.chat.id].get("step") != "address":
         return
 
     d = user_data[m.chat.id]
