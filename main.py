@@ -277,6 +277,27 @@ def handle_extras(m):
             m.chat.id,
             f"{m.text} added. Select more or press DONE."
         )
+
+
+# ---------- PHONE ----------
+
+@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "phone")
+def client_phone(m):
+
+    if m.chat.id not in user_data:
+        return
+
+    d = user_data[m.chat.id]
+
+    d["phone"] = m.text.strip()
+
+    bot.send_message(
+        m.chat.id,
+        "📍 Enter your address"
+    )
+
+    d["step"] = "address"
+    
     
 # ---------- ADDRESS ----------
 
@@ -322,26 +343,6 @@ f"""
     )
 
     del user_data[m.chat.id]
-
-
-# ---------- PHONE ----------
-
-@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "phone")
-def client_phone(m):
-
-    if m.chat.id not in user_data:
-        return
-
-    d = user_data[m.chat.id]
-
-    d["phone"] = m.text.strip()
-
-    bot.send_message(
-        m.chat.id,
-        "📍 Enter your address"
-    )
-
-    d["step"] = "address"
 
 
 # ---------- ADMIN PANEL ----------
