@@ -231,34 +231,34 @@ def flow(m):
     step = d["step"]
 
     # DATE
-    # DATE
-if step == "date":
+    if step == "date":
 
-    if m.text == "📅 Enter another date":
+        if m.text == "📅 Enter another date":
+
+            bot.send_message(
+                m.chat.id,
+                "Enter date MM-DD-YYYY\nExample: 06-25-2026"
+            )
+
+            d["step"] = "manual_date"
+            return
+
+        d["date"] = m.text
+
+        kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        kb.add("Inside oven","Inside fridge","Windows")
+        kb.add("Done")
 
         bot.send_message(
             m.chat.id,
-            "Enter date MM-DD-YYYY\nExample: 06-25-2026"
+            "✨ Select extra services",
+            reply_markup=kb
         )
 
-        d["step"] = "manual_date"
+        d["extras"] = []
+        d["step"] = "extras"
         return
 
-    d["date"] = m.text
-
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("Inside oven","Inside fridge","Windows")
-    kb.add("Done")
-
-    bot.send_message(
-        m.chat.id,
-        "✨ Select extra services",
-        reply_markup=kb
-    )
-
-    d["extras"] = []
-    d["step"] = "extras"
-    return
 
     # MANUAL DATE
     if step == "manual_date":
@@ -289,6 +289,7 @@ if step == "date":
 
         return
 
+
     # EXTRAS
     if step == "extras":
 
@@ -310,6 +311,7 @@ if step == "date":
         )
         return
 
+
     # NAME
     if step == "name":
 
@@ -323,6 +325,7 @@ if step == "date":
         d["step"] = "phone"
         return
 
+
     # PHONE
     if step == "phone":
 
@@ -335,6 +338,7 @@ if step == "date":
 
         d["step"] = "address"
         return
+
 
     # ADDRESS
     if step == "address":
@@ -352,7 +356,7 @@ if step == "date":
         extras = ", ".join(d["extras"]) if d["extras"] else "None"
 
         bot.send_message(
-ADMIN_ID,
+            ADMIN_ID,
 f"""
 🆕 *NEW CLEANING REQUEST*
 
@@ -376,11 +380,11 @@ f"""
 
 💰 Price: ${d['price']}
 """,
-parse_mode="Markdown"
-)
+            parse_mode="Markdown"
+        )
 
         bot.send_message(
-m.chat.id,
+            m.chat.id,
 """
 ✅ *Booking confirmed*
 
@@ -389,9 +393,9 @@ Our manager will contact you shortly.
 Thank you for choosing  
 *Cleaning Pros Team* 🧼
 """,
-reply_markup=main_menu(m.chat.id),
-parse_mode="Markdown"
-)
+            reply_markup=main_menu(m.chat.id),
+            parse_mode="Markdown"
+        )
 
         del user_data[m.chat.id]
 
