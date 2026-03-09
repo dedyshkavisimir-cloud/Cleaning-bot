@@ -255,7 +255,7 @@ def flow(m):
     d = user_data[m.chat.id]
     step = d.get("step")
 
-    if m.text in ["💰 Prices","📞 Contact","🧹 Book cleaning","⚙ Admin panel"]:
+    if not m.text:
         return
 
     d = user_data[m.chat.id]
@@ -266,10 +266,10 @@ def flow(m):
 
     if step == "extras":
 
-        if m.text == "Done":
-            bot.send_message(m.chat.id, "👤 Enter your name")
-            d["step"] = "name"
-            return
+    if m.text == "Done":
+        bot.send_message(m.chat.id, "👤 Enter your name")
+        d["step"] = "name"
+        return
 
         d["extras"].append(m.text)
 
