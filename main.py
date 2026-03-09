@@ -301,7 +301,11 @@ f"""
 """
 )
 
-    bot.send_message(m.chat.id,"✅ Booking confirmed!")
+    bot.send_message(
+    m.chat.id,
+    "✅ Booking confirmed!",
+    reply_markup=main_menu(m.chat.id)
+)
 
     del user_data[m.chat.id]
 
@@ -311,9 +315,16 @@ f"""
 @bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "phone")
 def client_phone(m):
 
+    if m.content_type != "text":
+        bot.send_message(m.chat.id, "Please enter phone number as text")
+        return
+
     user_data[m.chat.id]["phone"] = m.text
 
-    bot.send_message(m.chat.id, "Send address")
+    bot.send_message(
+        m.chat.id,
+        "📍 Send your address"
+    )
 
     user_data[m.chat.id]["step"] = "address"
 
