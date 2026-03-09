@@ -266,18 +266,18 @@ def flow(m):
 
     if step == "extras":
 
-    if m.text == "Done":
+    if m.text.lower() == "done":
         bot.send_message(m.chat.id, "👤 Enter your name")
         d["step"] = "name"
         return
 
-        d["extras"].append(m.text)
+    d["extras"].append(m.text)
 
-        bot.send_message(
-            m.chat.id,
-            f"✅ {m.text} added\nSelect more or press DONE."
-        )
-        return
+    bot.send_message(
+        m.chat.id,
+        f"✅ {m.text} added\nSelect more or press DONE."
+    )
+    return
 
 
     if step == "name":
