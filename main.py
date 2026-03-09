@@ -215,6 +215,82 @@ def select_date(m):
     d["extras"] = []
     d["step"] = "extras"
 
+
+# ---------- ADMIN PANEL ----------
+
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "⚙ Admin panel")
+def admin_panel(m):
+
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+    kb.add("📅 Today bookings")
+    kb.add("📅 Tomorrow bookings")
+    kb.add("💰 Income")
+
+    bot.send_message(
+        m.chat.id,
+        "⚙ Admin panel",
+        reply_markup=kb
+    )
+
+# ---------- TODAY ----------
+
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "📅 Today bookings")
+def today_bookings(m):
+
+    bookings = load_bookings()
+
+    today = datetime.now().strftime("%m-%d-%Y")
+
+    result = ""
+
+    for b in bookings:
+
+        if b["date"] == today:
+
+            result += f"{b['name']} | {b['cleaning']} | ${b['price']}\n"
+
+    if result == "":
+        result = "No bookings today"
+
+    bot.send_message(m.chat.id,result)
+
+# ---------- TOMORROW ----------
+
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "📅 Tomorrow bookings")
+def tomorrow_bookings(m):
+
+    bookings = load_bookings()
+
+    tomorrow = (datetime.now()+timedelta(days=1)).strftime("%m-%d-%Y")
+
+    result = ""
+
+    for b in bookings:
+
+        if b["date"] == tomorrow:
+
+            result += f"{b['name']} | {b['cleaning']} | ${b['price']}\n"
+
+    if result == "":
+        result = "No bookings tomorrow"
+
+    bot.send_message(m.chat.id,result)
+
+# ---------- INCOME ----------
+
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "💰 Income")
+def income(m):
+
+    bookings = load_bookings()
+
+    total = sum(i["price"] for i in bookings)
+
+    bot.send_message(
+        m.chat.id,
+        f"💰 Total income: ${total}"
+    )
+
 # ---------- FLOW ----------
 
 @bot.message_handler(content_types=["text"])
@@ -409,79 +485,6 @@ Thank you for choosing
 
         del user_data[m.chat.id]
 
-# ---------- ADMIN PANEL ----------
 
-@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "⚙ Admin panel")
-def admin_panel(m):
-
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-
-    kb.add("📅 Today bookings")
-    kb.add("📅 Tomorrow bookings")
-    kb.add("💰 Income")
-
-    bot.send_message(
-        m.chat.id,
-        "⚙ Admin panel",
-        reply_markup=kb
-    )
-
-# ---------- TODAY ----------
-
-@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "📅 Today bookings")
-def today_bookings(m):
-
-    bookings = load_bookings()
-
-    today = datetime.now().strftime("%m-%d-%Y")
-
-    result = ""
-
-    for b in bookings:
-
-        if b["date"] == today:
-
-            result += f"{b['name']} | {b['cleaning']} | ${b['price']}\n"
-
-    if result == "":
-        result = "No bookings today"
-
-    bot.send_message(m.chat.id,result)
-
-# ---------- TOMORROW ----------
-
-@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "📅 Tomorrow bookings")
-def tomorrow_bookings(m):
-
-    bookings = load_bookings()
-
-    tomorrow = (datetime.now()+timedelta(days=1)).strftime("%m-%d-%Y")
-
-    result = ""
-
-    for b in bookings:
-
-        if b["date"] == tomorrow:
-
-            result += f"{b['name']} | {b['cleaning']} | ${b['price']}\n"
-
-    if result == "":
-        result = "No bookings tomorrow"
-
-    bot.send_message(m.chat.id,result)
-
-# ---------- INCOME ----------
-
-@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "💰 Income")
-def income(m):
-
-    bookings = load_bookings()
-
-    total = sum(i["price"] for i in bookings)
-
-    bot.send_message(
-        m.chat.id,
-        f"💰 Total income: ${total}"
-    )
 
 bot.infinity_polling(skip_pending=True)
