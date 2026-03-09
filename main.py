@@ -185,10 +185,18 @@ def select_date(m):
     if m.chat.id not in user_data:
         return
 
+    if m.text == "📆 Pick another date":
+        return
+
+    # сохраняем дату
     user_data[m.chat.id]["date"] = m.text
 
-    bot.send_message(m.chat.id, f"📅 Date selected: {m.text}")
+    bot.send_message(
+        m.chat.id,
+        f"📅 Date selected: {m.text}"
+    )
 
+    # клавиатура extras
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
     kb.add("Inside oven")
     kb.add("Inside fridge")
@@ -197,7 +205,7 @@ def select_date(m):
 
     bot.send_message(
         m.chat.id,
-        "Select extras (you can choose several). Press DONE when finished.",
+        "✨ Select extras (you can choose several).\nPress DONE when finished.",
         reply_markup=kb
     )
 
