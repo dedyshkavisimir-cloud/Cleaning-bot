@@ -244,87 +244,61 @@ def save_manual_date(m):
             "❌ Wrong format\n\nUse MM/DD/YYYY\nExample: 06/25/2026"
         )
         
-# ---------- NAME ----------
 
-@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "name")
-def client_name(m):
+# ---------- FLOW HANDLER ----------
 
-    user_data[m.chat.id]["name"] = m.text
-
-    bot.send_message(m.chat.id, "Enter your phone number")
-
-    user_data[m.chat.id]["step"] = "phone"
-
-
-# ---------- EXTRAS ----------
-
-# ---------- EXTRAS ----------
-
-@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "extras" and m.text != "Done")
-def add_extra(m):
+@bot.message_handler(func=lambda m: m.chat.id in user_data)
+def flow(m):
 
     d = user_data[m.chat.id]
+    step = d.get("step")
 
-    d["extras"].append(m.text)
+    if step == "extras":
 
-    bot.send_message(
-        m.chat.id,
-        f"✅ {m.text} added\nSelect more or press DONE."
-    )
+        if m.text == "Done":
+            bot.send_message(m.chat.id, "👤 Enter your name")
+            d["step"] = "name"
+            return
 
+        d["extras"].append(m.text)
 
-@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "extras" and m.text == "Done")
-def extras_done(m):
-
-    bot.send_message(
-        m.chat.id,
-        "👤 Enter your name"
-    )
-
-    user_data[m.chat.id]["step"] = "name"
-
-
-# ---------- PHONE ----------
-
-@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "phone")
-def client_phone(m):
-
-    if m.chat.id not in user_data:
+        bot.send_message(
+            m.chat.id,
+            f"✅ {m.text} added\nSelect more or press DONE."
+        )
         return
 
-    d = user_data[m.chat.id]
 
-    d["phone"] = m.text.strip()
+    if step == "name":
 
-    bot.send_message(
-        m.chat.id,
-        "📍 Enter your address"
-    )
+        d["name"] = m.text
 
-    d["step"] = "address"
-    
-    
-# ---------- ADDRESS ----------
+        bot.send_message(m.chat.id, "📞 Enter your phone number")
 
-@bot.message_handler(content_types=["text"])
-def client_address(m):
-
-    if m.chat.id not in user_data:
+        d["step"] = "phone"
         return
 
-    if user_data[m.chat.id].get("step") != "address":
+
+    if step == "phone":
+
+        d["phone"] = m.text
+
+        bot.send_message(m.chat.id, "📍 Enter your address")
+
+        d["step"] = "address"
         return
 
-    d = user_data[m.chat.id]
 
-    d["address"] = m.text.strip()
+    if step == "address":
 
-    bookings = load_bookings()
-    bookings.append(d)
-    save_bookings(bookings)
+        d["address"] = m.text
 
-    bot.send_message(
-        ADMIN_ID,
+        bookings = load_bookings()
+        bookings.append(d)
+        save_bookings(bookings)
+
+        bot.send_message(
+            ADMIN_ID,
 f"""
 🆕 NEW CLEANING REQUEST
 
@@ -342,16 +316,16 @@ f"""
 
 💰 Price: ${d['price']}
 """
-    )
+        )
 
-    bot.send_message(
-        m.chat.id,
-        "✅ Booking confirmed! We will contact you shortly.",
-        reply_markup=main_menu(m.chat.id)
-    )
+        bot.send_message(
+            m.chat.id,
+            "✅ Booking confirmed! We will contact you shortly.",
+            reply_markup=main_menu(m.chat.id)
+        )
 
-    del user_data[m.chat.id]
-
+        del user_data[m.chat.id]
+        
 
 # ---------- ADMIN PANEL ----------
 
