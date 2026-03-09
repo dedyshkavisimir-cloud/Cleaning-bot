@@ -171,6 +171,17 @@ def choose_date(m):
 
     bot.send_message(m.chat.id, "Choose anorher date", reply_markup=kb)
 
+@bot.message_handler(func=lambda m: m.chat.id in user_data and m.text.startswith(("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")))
+def select_date(m):
+
+    user_data[m.chat.id]["date"] = m.text
+
+    bot.send_message(m.chat.id, f"📅 Date selected: {m.text}")
+
+    bot.send_message(m.chat.id, "Enter your name")
+
+    user_data[m.chat.id]["step"] = "name"
+
 
 @bot.message_handler(func=lambda m: m.text == "📆 Pick another date")
 def manual_date(m):
