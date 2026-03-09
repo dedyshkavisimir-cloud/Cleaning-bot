@@ -332,11 +332,8 @@ parse_mode="Markdown"
 
 # ---------- ADMIN PANEL ----------
 
-@bot.message_handler(func=lambda m: m.text == "⚙ Admin panel")
-def admin(m):
-
-    if m.chat.id != ADMIN_ID:
-        return
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "⚙ Admin panel")
+def admin_panel(m):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
     kb.add("📅 Today bookings")
@@ -345,9 +342,95 @@ def admin(m):
 
     bot.send_message(
         m.chat.id,
-        "⚙ *Admin panel*",
-        reply_markup=kb,
-        parse_mode="Markdown"
+        "⚙ Admin panel",
+        reply_markup=kb
+    )
+
+
+# ---------- TODAY BOOKINGS ----------
+
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "📅 Today bookings")
+def today_bookings(m):
+
+    bookings = load_bookings()
+
+    today = datetime.now().strftime("%b %d")
+
+    result = ""
+
+    for b in bookings:
+
+        if b["date"] == today:
+
+            result += f"""
+🧾 Order #{b['order_id']}
+
+👤 {b['name']}
+📞 {b['phone']}
+
+🧹 {b['cleaning']}
+🛏 {b['bedrooms']} bedrooms
+💰 ${b['price']}
+
+📍 {b['address']}
+
+────────────
+"""
+
+    if result == "":
+        result = "No bookings today"
+
+    bot.send_message(m.chat.id, result)
+
+
+# ---------- TOMORROW BOOKINGS ----------
+
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "📅 Tomorrow bookings")
+def tomorrow_bookings(m):
+
+    bookings = load_bookings()
+
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime("%b %d")
+
+    result = ""
+
+    for b in bookings:
+
+        if b["date"] == tomorrow:
+
+            result += f"""
+🧾 Order #{b['order_id']}
+
+👤 {b['name']}
+📞 {b['phone']}
+
+🧹 {b['cleaning']}
+🛏 {b['bedrooms']} bedrooms
+💰 ${b['price']}
+
+📍 {b['address']}
+
+────────────
+"""
+
+    if result == "":
+        result = "No bookings tomorrow"
+
+    bot.send_message(m.chat.id, result)
+
+
+# ---------- INCOME ----------
+
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "💰 Income")
+def income(m):
+
+    bookings = load_bookings()
+
+    total = sum(i["price"] for i in bookings)
+
+    bot.send_message(
+        m.chat.id,
+        f"💰 Total income: ${total}"
     )
 
 # ---------- TODAY ----------
