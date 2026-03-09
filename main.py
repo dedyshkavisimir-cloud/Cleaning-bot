@@ -182,11 +182,22 @@ def select_date(m):
 
     user_data[m.chat.id]["date"] = m.text
 
-    bot.send_message(m.chat.id, f"📅 Date selected: {m.text}")
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
-    bot.send_message(m.chat.id, "Enter your name")
+    kb.add("Inside oven")
+    kb.add("Inside fridge")
+    kb.add("Windows")
+    kb.add("Done")
 
-    user_data[m.chat.id]["step"] = "name"
+    bot.send_message(
+        m.chat.id,
+        "Select extras (you can choose several). Press DONE when finished.",
+        reply_markup=kb
+    )
+
+    user_data[m.chat.id]["extras"] = []
+
+    user_data[m.chat.id]["step"] = "extras"
 
 
 @bot.message_handler(func=lambda m: m.text == "📆 Pick another date")
@@ -236,21 +247,22 @@ def client_name(m):
 
 # ---------- EXTRAS ----------
 
-@bot.message_handler(func=lambda m: m.chat.id in user_data and "name" not in user_data[m.chat.id])
-def client_name(m):
+@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "extras")
+def extras(m):
 
-    user_data[m.chat.id]["name"] = m.text
-    user_data[m.chat.id]["extras"] = []
+    if m.text == "Done":
 
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("Inside fridge","Inside oven")
-    kb.add("Inside cabinets","Pet hair")
-    kb.add("Done")
+        bot.send_message(m.chat.id, "Send address")
+
+        user_data[m.chat.id]["step"] = "address"
+
+        return
+
+    user_data[m.chat.id]["extras"].append(m.text)
 
     bot.send_message(
         m.chat.id,
-        "Select extras (you can choose several). Press DONE when finished.",
-        reply_markup=kb
+        f"{m.text} added. Select more or press DONE."
     )
     
 @bot.message_handler(func=lambda m: m.text in ["Inside fridge","Inside oven","Inside cabinets","Pet hair"])
@@ -283,13 +295,28 @@ def extras_done(m):
 @bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "address")
 def client_address(m):
 
-    user_data[m.chat.id]["address"] = m.text
+    d = user_data[m.chat.id]
+
+    d["address"] = m.text
 
     data = load_bookings()
-    data.append(user_data[m.chat.id])
+    data.append(d)
     save_bookings(data)
 
+    bot.send_message(ADMIN_ID, f"""
+🧹 New booking
+
+Cleaning: {d['cleaning']}
+Bedrooms: {d['bedrooms']}
+Date: {d['date']}
+
+Extras: {", ".join(d['extras'])}
+
+Address: {d['address']}
+""")
+
     bot.send_message(m.chat.id, "✅ Booking confirmed!")
+
     del user_data[m.chat.id]
 
 
