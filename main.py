@@ -189,12 +189,24 @@ def flow(m):
     if m.chat.id not in user_data:
         return
 
-    # не перехватываем кнопки меню
-    if m.text in ["🧹 Book cleaning","💰 Prices","📞 Contact","⚙ Admin panel","📅 Today bookings","📅 Tomorrow bookings","💰 Income"]:
+    d = user_data[m.chat.id]
+
+    if "step" not in d:
         return
 
-    d = user_data[m.chat.id]
-    step = d.get("step")
+    # не перехватываем кнопки меню
+    if m.text in [
+        "🧹 Book cleaning",
+        "💰 Prices",
+        "📞 Contact",
+        "⚙ Admin panel",
+        "📅 Today bookings",
+        "📅 Tomorrow bookings",
+        "💰 Income"
+    ]:
+        return
+
+    step = d["step"]
 
     # DATE
     if step == "date":
