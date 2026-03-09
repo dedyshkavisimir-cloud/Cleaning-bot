@@ -189,6 +189,10 @@ def flow(m):
     if m.chat.id not in user_data:
         return
 
+    # не перехватываем кнопки меню
+    if m.text in ["🧹 Book cleaning","💰 Prices","📞 Contact","⚙ Admin panel","📅 Today bookings","📅 Tomorrow bookings","💰 Income"]:
+        return
+
     d = user_data[m.chat.id]
     step = d.get("step")
 
