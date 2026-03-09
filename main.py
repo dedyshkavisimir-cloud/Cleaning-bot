@@ -185,6 +185,36 @@ parse_mode="Markdown"
 
     d["step"] = "date"
 
+@bot.message_handler(func=lambda m: m.chat.id in user_data and user_data[m.chat.id].get("step") == "date")
+def select_date(m):
+
+    d = user_data[m.chat.id]
+
+    if m.text == "📅 Enter another date":
+
+        bot.send_message(
+            m.chat.id,
+            "Enter date in format MM-DD-YYYY\nExample: 06-25-2026"
+        )
+
+        d["step"] = "manual_date"
+        return
+
+    d["date"] = m.text
+
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb.add("Inside oven","Inside fridge","Windows")
+    kb.add("Done")
+
+    bot.send_message(
+        m.chat.id,
+        "✨ Select extra services",
+        reply_markup=kb
+    )
+
+    d["extras"] = []
+    d["step"] = "extras"
+
 # ---------- FLOW ----------
 
 @bot.message_handler(content_types=["text"])
