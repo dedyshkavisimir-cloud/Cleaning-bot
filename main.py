@@ -149,8 +149,32 @@ def bedrooms(m):
         reply_markup=kb
     )
 
-
 # ---------- DATE ----------
+
+if step == "date":
+
+    d["date"] = m.text
+
+    bot.send_message(
+        m.chat.id,
+        f"📅 Date selected: {m.text}"
+    )
+
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb.add("Inside oven")
+    kb.add("Inside fridge")
+    kb.add("Windows")
+    kb.add("Done")
+
+    bot.send_message(
+        m.chat.id,
+        "✨ Select extras (you can choose several).\nPress DONE when finished.",
+        reply_markup=kb
+    )
+
+    d["extras"] = []
+    d["step"] = "extras"
+    return
 
 @bot.message_handler(func=lambda m: m.text in ["1 Bedroom","2 Bedrooms","3 Bedrooms"])
 def choose_date(m):
@@ -177,40 +201,7 @@ def choose_date(m):
         reply_markup=kb
     )
     user_data[m.chat.id]["step"] = "date"
-
-
-@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "date")
-def select_date(m):
-
-    if m.chat.id not in user_data:
-        return
-
-    if m.text == "📆 Pick another date":
-        return
-
-    # сохраняем дату
-    user_data[m.chat.id]["date"] = m.text
-
-    bot.send_message(
-        m.chat.id,
-        f"📅 Date selected: {m.text}"
-    )
-
-    # клавиатура extras
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("Inside oven")
-    kb.add("Inside fridge")
-    kb.add("Windows")
-    kb.add("Done")
-
-    bot.send_message(
-        m.chat.id,
-        "✨ Select extras (you can choose several).\nPress DONE when finished.",
-        reply_markup=kb
-    )
-
-    user_data[m.chat.id]["extras"] = []
-    user_data[m.chat.id]["step"] = "extras"
+    
 
 @bot.message_handler(func=lambda m: m.text == "📆 Pick another date")
 def manual_date(m):
