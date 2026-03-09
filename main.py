@@ -181,33 +181,7 @@ parse_mode="Markdown"
 
     d["step"] = "date"
 
-# ---------- FLOW ----------
-
-@bot.message_handler(content_types=["text"])
-def flow(m):
-
-    if m.chat.id not in user_data:
-        return
-
-    d = user_data[m.chat.id]
-
-    if "step" not in d:
-        return
-
-    # не перехватываем кнопки меню
-    if m.text in [
-        "🧹 Book cleaning",
-        "💰 Prices",
-        "📞 Contact",
-        "⚙ Admin panel",
-        "📅 Today bookings",
-        "📅 Tomorrow bookings",
-        "💰 Income"
-    ]:
-        return
-
-    step = d["step"]
-
+   
     # DATE
     if step == "date":
 
@@ -444,6 +418,33 @@ def income(m):
         m.chat.id,
         f"💰 Total income: ${total}"
     )
+
+# ---------- FLOW ----------
+
+@bot.message_handler(content_types=["text"])
+def flow(m):
+
+    if m.chat.id not in user_data:
+        return
+
+    d = user_data[m.chat.id]
+
+    if "step" not in d:
+        return
+
+    # не перехватываем кнопки меню
+    if m.text in [
+        "🧹 Book cleaning",
+        "💰 Prices",
+        "📞 Contact",
+        "⚙ Admin panel",
+        "📅 Today bookings",
+        "📅 Tomorrow bookings",
+        "💰 Income"
+    ]:
+        return
+
+    step = d["step"]
 
 
 bot.infinity_polling(skip_pending=True)
