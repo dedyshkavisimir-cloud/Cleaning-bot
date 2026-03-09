@@ -258,25 +258,30 @@ def client_name(m):
 
 # ---------- EXTRAS ----------
 
-@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "extras")
-def handle_extras(m):
+# ---------- EXTRAS ----------
+
+@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "extras" and m.text != "Done")
+def add_extra(m):
 
     d = user_data[m.chat.id]
 
-    if m.text == "Done":
+    d["extras"].append(m.text)
 
-        bot.send_message(m.chat.id, "Enter your name")
+    bot.send_message(
+        m.chat.id,
+        f"✅ {m.text} added\nSelect more or press DONE."
+    )
 
-        d["step"] = "name"
 
-    else:
+@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "extras" and m.text == "Done")
+def extras_done(m):
 
-        d["extras"].append(m.text)
+    bot.send_message(
+        m.chat.id,
+        "👤 Enter your name"
+    )
 
-        bot.send_message(
-            m.chat.id,
-            f"{m.text} added. Select more or press DONE."
-        )
+    user_data[m.chat.id]["step"] = "name"
 
 
 # ---------- PHONE ----------
