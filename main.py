@@ -247,11 +247,14 @@ def save_manual_date(m):
 
 # ---------- FLOW HANDLER ----------
 
-@bot.message_handler(func=lambda m: m.chat.id in user_data and user_data[m.chat.id].get("step") in ["extras","name","phone","address"])
+@bot.message_handler(func=lambda m: m.chat.id in user_data)
 def flow(m):
 
     d = user_data[m.chat.id]
     step = d.get("step")
+
+    if step not in ["extras","name","phone","address"]:
+        return
 
     if step == "extras":
 
