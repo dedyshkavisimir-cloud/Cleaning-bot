@@ -401,20 +401,25 @@ Thank you for choosing
 
 # ---------- ADMIN PANEL ----------
 
-@bot.message_handler(func=lambda m: m.text == "⚙ Admin panel" and m.chat.id == ADMIN_ID)
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "⚙ Admin panel")
 def admin_panel(m):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
     kb.add("📅 Today bookings")
     kb.add("📅 Tomorrow bookings")
     kb.add("💰 Income")
 
-    bot.send_message(m.chat.id,"⚙ Admin panel",reply_markup=kb)
+    bot.send_message(
+        m.chat.id,
+        "⚙ Admin panel",
+        reply_markup=kb
+    )
 
 # ---------- TODAY ----------
 
-@bot.message_handler(func=lambda m: m.text == "📅 Today bookings" and m.chat.id == ADMIN_ID)
-def today(m):
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "📅 Today bookings")
+def today_bookings(m):
 
     bookings = load_bookings()
 
@@ -435,8 +440,8 @@ def today(m):
 
 # ---------- TOMORROW ----------
 
-@bot.message_handler(func=lambda m: m.text == "📅 Tomorrow bookings" and m.chat.id == ADMIN_ID)
-def tomorrow(m):
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "📅 Tomorrow bookings")
+def tomorrow_bookings(m):
 
     bookings = load_bookings()
 
@@ -457,7 +462,7 @@ def tomorrow(m):
 
 # ---------- INCOME ----------
 
-@bot.message_handler(func=lambda m: m.text == "💰 Income" and m.chat.id == ADMIN_ID)
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.text == "💰 Income")
 def income(m):
 
     bookings = load_bookings()
