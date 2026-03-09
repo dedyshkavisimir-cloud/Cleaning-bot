@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import json
 import time
 
-TOKEN = "8695031161:AAFqAoGy2m14wnLOjuEywRG5FSKs77GiJRI"
+TOKEN = "PUT_YOUR_TOKEN_HERE"
 ADMIN_ID = 146998462
 
 bot = telebot.TeleBot(TOKEN)
@@ -54,11 +54,7 @@ def start(m):
 
     bot.send_message(
         m.chat.id,
-"""
-🧼 *Cleaning Pros Team*
-
-Professional house cleaning service
-""",
+        "🧼 *Cleaning Pros Team*\nProfessional cleaning service",
         reply_markup=main_menu(m.chat.id),
         parse_mode="Markdown"
     )
@@ -76,23 +72,23 @@ m.chat.id,
 ━━━━━━━━━━━━
 
 🧹 Regular cleaning  
-1 bedroom — $120  
-2 bedrooms — $150  
-3 bedrooms — $180  
+• 1 bedroom — $120  
+• 2 bedrooms — $150  
+• 3 bedrooms — $180  
 
 ━━━━━━━━━━━━
 
 ✨ Deep cleaning  
-1 bedroom — $180  
-2 bedrooms — $220  
-3 bedrooms — $260  
+• 1 bedroom — $180  
+• 2 bedrooms — $220  
+• 3 bedrooms — $260  
 
 ━━━━━━━━━━━━
 
 🚚 Move out cleaning  
-1 bedroom — $200  
-2 bedrooms — $250  
-3 bedrooms — $300  
+• 1 bedroom — $200  
+• 2 bedrooms — $250  
+• 3 bedrooms — $300
 """,
 parse_mode="Markdown"
 )
@@ -142,7 +138,9 @@ def bedrooms(m):
     user_data[m.chat.id]["cleaning"] = m.text
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("1 Bedroom","2 Bedrooms","3 Bedrooms")
+    kb.add("1 Bedroom")
+    kb.add("2 Bedrooms")
+    kb.add("3 Bedrooms")
 
     bot.send_message(
         m.chat.id,
@@ -173,7 +171,7 @@ def choose_date(m):
     kb.add("📅 Enter another date")
 
     bot.send_message(
-        m.chat.id,
+m.chat.id,
 f"""
 💰 *Estimated price:* ${d['price']}
 
@@ -181,13 +179,11 @@ f"""
 
 📅 *Choose cleaning date*
 """,
-        reply_markup=kb,
-        parse_mode="Markdown"
-    )
+reply_markup=kb,
+parse_mode="Markdown"
+)
 
     d["step"] = "date"
-
-
 
 # ---------- FLOW ----------
 
@@ -204,52 +200,57 @@ def flow(m):
 
     step = d["step"]
 
-    # ----- DATE -----
+    # DATE
     if step == "date":
 
         if m.text == "📅 Enter another date":
 
             bot.send_message(
                 m.chat.id,
-                "Enter date in format MM-DD-YYYY\nExample: 06-25-2026"
+                "Enter date MM-DD-YYYY\nExample: 06-25-2026"
             )
 
             d["step"] = "manual_date"
             return
 
-        # пользователь выбрал одну из кнопок даты
         d["date"] = m.text
 
         kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        kb.add("Inside oven", "Inside fridge", "Windows")
+        kb.add("Inside oven","Inside fridge","Windows")
         kb.add("Done")
 
         bot.send_message(
-            m.chat.id,
-            "✨ Select extra services (optional)",
-            reply_markup=kb
-        )
+m.chat.id,
+"""
+✨ *Select extra services*
+
+You can choose multiple options
+
+Press *Done* when finished
+""",
+reply_markup=kb,
+parse_mode="Markdown"
+)
 
         d["extras"] = []
         d["step"] = "extras"
         return
 
-
-    # ----- MANUAL DATE -----
+    # MANUAL DATE
     if step == "manual_date":
 
         try:
-            datetime.strptime(m.text, "%m-%d-%Y")
+            datetime.strptime(m.text,"%m-%d-%Y")
 
             d["date"] = m.text
 
             kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            kb.add("Inside oven", "Inside fridge", "Windows")
+            kb.add("Inside oven","Inside fridge","Windows")
             kb.add("Done")
 
             bot.send_message(
                 m.chat.id,
-                "✨ Select extra services",
+                "✨ Select extras",
                 reply_markup=kb
             )
 
@@ -264,8 +265,7 @@ def flow(m):
 
         return
 
-
-    # ----- EXTRAS -----
+    # EXTRAS
     if step == "extras":
 
         if m.text == "Done":
@@ -286,22 +286,20 @@ def flow(m):
         )
         return
 
-
-    # ----- NAME -----
+    # NAME
     if step == "name":
 
         d["name"] = m.text
 
         bot.send_message(
             m.chat.id,
-            "📞 Enter your phone"
+            "📞 Enter your phone number"
         )
 
         d["step"] = "phone"
         return
 
-
-    # ----- PHONE -----
+    # PHONE
     if step == "phone":
 
         d["phone"] = m.text
@@ -314,8 +312,7 @@ def flow(m):
         d["step"] = "address"
         return
 
-
-    # ----- ADDRESS -----
+    # ADDRESS
     if step == "address":
 
         d["address"] = m.text
@@ -331,33 +328,46 @@ def flow(m):
         extras = ", ".join(d["extras"]) if d["extras"] else "None"
 
         bot.send_message(
-            ADMIN_ID,
-            f"""
-🧹 NEW CLEANING REQUEST
+ADMIN_ID,
+f"""
+🆕 *NEW CLEANING REQUEST*
 
-Order #{order_id}
+━━━━━━━━━━━━
 
-Client: {d['name']}
-Phone: {d['phone']}
+🧾 Order #{order_id}
 
-Service: {d['cleaning']}
-Bedrooms: {d['bedrooms']}
-Date: {d['date']}
+👤 {d['name']}
+📞 {d['phone']}
 
-Extras: {extras}
+🧹 {d['cleaning']}
+🏠 {d['bedrooms']} bedrooms
+📅 {d['date']}
 
-Address:
+✨ Extras: {extras}
+
+📍 Address:
 {d['address']}
 
-Price: ${d['price']}
-"""
-        )
+━━━━━━━━━━━━
+
+💰 Price: ${d['price']}
+""",
+parse_mode="Markdown"
+)
 
         bot.send_message(
-            m.chat.id,
-            "✅ Booking confirmed!\nOur manager will contact you shortly.",
-            reply_markup=main_menu(m.chat.id)
-        )
+m.chat.id,
+"""
+✅ *Booking confirmed*
+
+Our manager will contact you shortly.
+
+Thank you for choosing  
+*Cleaning Pros Team* 🧼
+""",
+reply_markup=main_menu(m.chat.id),
+parse_mode="Markdown"
+)
 
         del user_data[m.chat.id]
 
@@ -376,7 +386,7 @@ def admin_panel(m):
 # ---------- TODAY ----------
 
 @bot.message_handler(func=lambda m: m.text == "📅 Today bookings" and m.chat.id == ADMIN_ID)
-def today_bookings(m):
+def today(m):
 
     bookings = load_bookings()
 
@@ -398,7 +408,7 @@ def today_bookings(m):
 # ---------- TOMORROW ----------
 
 @bot.message_handler(func=lambda m: m.text == "📅 Tomorrow bookings" and m.chat.id == ADMIN_ID)
-def tomorrow_bookings(m):
+def tomorrow(m):
 
     bookings = load_bookings()
 
