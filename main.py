@@ -207,15 +207,14 @@ def save_manual_date(m):
 
 # ---------- NAME ----------
 
-@bot.message_handler(func=lambda m: m.chat.id in user_data and "date" not in user_data[m.chat.id])
+@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "name")
 def client_name(m):
 
-    user_data[m.chat.id]["date"] = m.text
+    user_data[m.chat.id]["name"] = m.text
 
-    bot.send_message(
-        m.chat.id,
-        "Please enter your name"
-    )
+    bot.send_message(m.chat.id, "Enter your phone number")
+
+    user_data[m.chat.id]["step"] = "phone"
 
 
 # ---------- EXTRAS ----------
@@ -264,22 +263,28 @@ def extras_done(m):
 
 # ---------- ADDRESS ----------
 
-@bot.message_handler(func=lambda m: m.text in ["Inside fridge","Inside oven","No extras"])
-def address(m):
+@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "address")
+def client_address(m):
 
-    user_data[m.chat.id]["extras"] = m.text
+    user_data[m.chat.id]["address"] = m.text
 
-    bot.send_message(m.chat.id,"Send address")
+    save_booking(user_data[m.chat.id])
+
+    bot.send_message(m.chat.id, "✅ Booking confirmed!")
+
+    del user_data[m.chat.id]
 
 
 # ---------- PHONE ----------
 
-@bot.message_handler(func=lambda m: m.chat.id in user_data and "address" not in user_data[m.chat.id])
-def phone(m):
+@bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "phone")
+def client_phone(m):
 
-    user_data[m.chat.id]["address"] = m.text
+    user_data[m.chat.id]["phone"] = m.text
 
-    bot.send_message(m.chat.id,"Send phone number")
+    bot.send_message(m.chat.id, "Enter your address")
+
+    user_data[m.chat.id]["step"] = "address"
 
 
 # ---------- FINISH ----------
