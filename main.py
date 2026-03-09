@@ -285,10 +285,10 @@ def client_address(m):
 
     if m.chat.id not in user_data:
         return
-    
+
     d = user_data[m.chat.id]
 
-    d["address"] = m.text
+    d["address"] = m.text.strip()
 
     bookings = load_bookings()
     bookings.append(d)
@@ -313,13 +313,13 @@ f"""
 
 💰 Price: ${d['price']}
 """
-)
+    )
 
     bot.send_message(
-    m.chat.id,
-    "✅ Booking confirmed! We will contact you shortly.",
-    reply_markup=main_menu(m.chat.id)
-)
+        m.chat.id,
+        "✅ Booking confirmed! We will contact you shortly.",
+        reply_markup=main_menu(m.chat.id)
+    )
 
     del user_data[m.chat.id]
 
@@ -329,18 +329,19 @@ f"""
 @bot.message_handler(func=lambda m: user_data.get(m.chat.id, {}).get("step") == "phone")
 def client_phone(m):
 
-    if m.content_type != "text":
-        bot.send_message(m.chat.id, "Please enter phone number as text")
+    if m.chat.id not in user_data:
         return
 
-    user_data[m.chat.id]["phone"] = m.text
+    d = user_data[m.chat.id]
+
+    d["phone"] = m.text.strip()
 
     bot.send_message(
         m.chat.id,
-        "📍 Send your address"
+        "📍 Enter your address"
     )
 
-    user_data[m.chat.id]["step"] = "address"
+    d["step"] = "address"
 
 
 # ---------- ADMIN PANEL ----------
