@@ -54,9 +54,8 @@ def start(m):
 
     bot.send_message(
         m.chat.id,
-        "Welcome to *Cleaning Pros Team* 🧼",
-        reply_markup=main_menu(m.chat.id),
-        parse_mode="Markdown"
+        "Welcome to Cleaning Pros Team 🧼",
+        reply_markup=main_menu(m.chat.id)
     )
 
 # ---------- PRICES ----------
@@ -67,30 +66,23 @@ def prices_menu(m):
     bot.send_message(
 m.chat.id,
 """
-💰 *CLEANING PRICES*
+💰 CLEANING PRICES
 
-━━━━━━━━━━━━
+Regular cleaning
+1 bedroom — $120
+2 bedrooms — $150
+3 bedrooms — $180
 
-🧹 *Regular cleaning*
-• 1 bedroom — $120  
-• 2 bedrooms — $150  
-• 3 bedrooms — $180  
+Deep cleaning
+1 bedroom — $180
+2 bedrooms — $220
+3 bedrooms — $260
 
-━━━━━━━━━━━━
-
-✨ *Deep cleaning*
-• 1 bedroom — $180  
-• 2 bedrooms — $220  
-• 3 bedrooms — $260  
-
-━━━━━━━━━━━━
-
-🚚 *Move out cleaning*
-• 1 bedroom — $200  
-• 2 bedrooms — $250  
-• 3 bedrooms — $300  
-""",
-parse_mode="Markdown"
+Move out cleaning
+1 bedroom — $200
+2 bedrooms — $250
+3 bedrooms — $300
+"""
 )
 
 # ---------- CONTACT ----------
@@ -101,15 +93,14 @@ def contact(m):
     bot.send_message(
 m.chat.id,
 """
-📞 *Cleaning Pros Team*
+Cleaning Pros Team
 
-Phone  
+Phone
 253-202-0979
 
-Email  
+Email
 manager@excellentsolution.online
-""",
-parse_mode="Markdown"
+"""
 )
 
 # ---------- BOOK CLEANING ----------
@@ -124,9 +115,8 @@ def cleaning_type(m):
 
     bot.send_message(
         m.chat.id,
-        "🧹 *Choose cleaning type*",
-        reply_markup=kb,
-        parse_mode="Markdown"
+        "Choose cleaning type",
+        reply_markup=kb
     )
 
 # ---------- BEDROOMS ----------
@@ -142,9 +132,8 @@ def bedrooms(m):
 
     bot.send_message(
         m.chat.id,
-        "🏠 *How many bedrooms?*",
-        reply_markup=kb,
-        parse_mode="Markdown"
+        "How many bedrooms?",
+        reply_markup=kb
     )
 
 # ---------- DATE ----------
@@ -169,74 +158,130 @@ def choose_date(m):
     kb.add("📅 Enter another date")
 
     bot.send_message(
-m.chat.id,
-f"""
-💰 *Estimated price:* ${d['price']}
-
-━━━━━━━━━━━━
-
-📅 *Choose cleaning date*
-""",
-reply_markup=kb,
-parse_mode="Markdown"
-)
+        m.chat.id,
+        f"Estimated price: ${d['price']}\n\nChoose cleaning date",
+        reply_markup=kb
+    )
 
     d["step"] = "date"
 
-   
-    # DATE
-if step == "date":
+# ---------- ADMIN PANEL ----------
 
-    if m.text == "📅 Enter another date":
-
-        bot.send_message(
-            m.chat.id,
-            """
-📅 *Enter date manually*
-
-Format:
-MM-DD-YYYY
-
-Example:
-06-25-2026
-""",
-            parse_mode="Markdown"
-        )
-
-        d["step"] = "manual_date"
-        return
-
-    # выбрана дата из кнопок
-    d["date"] = m.text
+@bot.message_handler(func=lambda m: m.text == "⚙ Admin panel" and m.chat.id == ADMIN_ID)
+def admin_panel(m):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("Inside oven","Inside fridge","Windows")
-    kb.add("Done")
+    kb.add("📅 Today bookings")
+    kb.add("📅 Tomorrow bookings")
+    kb.add("💰 Income")
 
     bot.send_message(
-m.chat.id,
+        m.chat.id,
+        "Admin panel",
+        reply_markup=kb
+    )
+
+# ---------- TODAY ----------
+
+@bot.message_handler(func=lambda m: m.text == "📅 Today bookings" and m.chat.id == ADMIN_ID)
+def today_bookings(m):
+
+    bookings = load_bookings()
+    today = datetime.now().strftime("%b %d")
+
+    result = ""
+
+    for b in bookings:
+
+        if b["date"] == today:
+
+            result += f"""
+Order #{b['order_id']}
+{b['cleaning']} {b['bedrooms']} bedrooms
+${b['price']}
+{b['name']}
+{b['phone']}
+{b['address']}
+
+----------
 """
-✨ *Select extra services*
 
-You can choose *multiple options*
+    if result == "":
+        result = "No bookings today"
 
-Press *Done* when finished
-""",
-reply_markup=kb,
-parse_mode="Markdown"
-)
+    bot.send_message(m.chat.id,result)
 
-    d["extras"] = []
-    d["step"] = "extras"
-    return
+# ---------- TOMORROW ----------
 
-    
-    # MANUAL DATE
-if step == "manual_date":
+@bot.message_handler(func=lambda m: m.text == "📅 Tomorrow bookings" and m.chat.id == ADMIN_ID)
+def tomorrow_bookings(m):
 
-    try:
+    bookings = load_bookings()
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime("%b %d")
 
-        date = datetime.strptime(m.text,"%m-%d-%Y")
+    result = ""
+
+    for b in bookings:
+
+        if b["date"] == tomorrow:
+
+            result += f"""
+Order #{b['order_id']}
+{b['cleaning']} {b['bedrooms']} bedrooms
+${b['price']}
+{b['name']}
+{b['phone']}
+{b['address']}
+
+----------
+"""
+
+    if result == "":
+        result = "No bookings tomorrow"
+
+    bot.send_message(m.chat.id,result)
+
+# ---------- INCOME ----------
+
+@bot.message_handler(func=lambda m: m.text == "💰 Income" and m.chat.id == ADMIN_ID)
+def income(m):
+
+    bookings = load_bookings()
+
+    total = sum(i["price"] for i in bookings)
+
+    bot.send_message(
+        m.chat.id,
+        f"Total income: ${total}"
+    )
+
+# ---------- FLOW ----------
+
+@bot.message_handler(content_types=["text"])
+def flow(m):
+
+    if m.chat.id not in user_data:
+        return
+
+    d = user_data[m.chat.id]
+
+    if "step" not in d:
+        return
+
+    step = d["step"]
+
+    # DATE
+    if step == "date":
+
+        if m.text == "📅 Enter another date":
+
+            bot.send_message(
+                m.chat.id,
+                "Enter date like MM-DD-YYYY\nExample: 06-25-2026"
+            )
+
+            d["step"] = "manual_date"
+            return
 
         d["date"] = m.text
 
@@ -245,27 +290,43 @@ if step == "manual_date":
         kb.add("Done")
 
         bot.send_message(
-m.chat.id,
-"""
-✨ *Select extra services*
-
-You can choose multiple options
-
-Press *Done* when finished
-""",
-reply_markup=kb,
-parse_mode="Markdown"
-)
+            m.chat.id,
+            "Select extras (optional)",
+            reply_markup=kb
+        )
 
         d["extras"] = []
         d["step"] = "extras"
+        return
 
-    except:
+    # MANUAL DATE
+    if step == "manual_date":
 
-        bot.send_message(
-            m.chat.id,
-            "❌ Wrong format.\nUse MM-DD-YYYY\nExample: 06-25-2026"
-        )
+        try:
+
+            datetime.strptime(m.text,"%m-%d-%Y")
+
+            d["date"] = m.text
+
+            kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            kb.add("Inside oven","Inside fridge","Windows")
+            kb.add("Done")
+
+            bot.send_message(
+                m.chat.id,
+                "Select extras",
+                reply_markup=kb
+            )
+
+            d["extras"] = []
+            d["step"] = "extras"
+
+        except:
+
+            bot.send_message(
+                m.chat.id,
+                "Wrong format. Use MM-DD-YYYY"
+            )
 
         return
 
@@ -274,11 +335,7 @@ parse_mode="Markdown"
 
         if m.text == "Done":
 
-            bot.send_message(
-                m.chat.id,
-                "👤 *Enter your name*",
-                parse_mode="Markdown"
-            )
+            bot.send_message(m.chat.id,"Enter your name")
 
             d["step"] = "name"
             return
@@ -287,7 +344,7 @@ parse_mode="Markdown"
 
         bot.send_message(
             m.chat.id,
-            f"✅ {m.text} added"
+            f"{m.text} added"
         )
         return
 
@@ -296,11 +353,7 @@ parse_mode="Markdown"
 
         d["name"] = m.text
 
-        bot.send_message(
-            m.chat.id,
-            "📞 *Enter your phone number*",
-            parse_mode="Markdown"
-        )
+        bot.send_message(m.chat.id,"Enter your phone")
 
         d["step"] = "phone"
         return
@@ -310,11 +363,7 @@ parse_mode="Markdown"
 
         d["phone"] = m.text
 
-        bot.send_message(
-            m.chat.id,
-            "📍 *Enter your address*",
-            parse_mode="Markdown"
-        )
+        bot.send_message(m.chat.id,"Enter your address")
 
         d["step"] = "address"
         return
@@ -333,178 +382,16 @@ parse_mode="Markdown"
         save_bookings(bookings)
 
         bot.send_message(
-ADMIN_ID,
-f"""
-🆕 *NEW CLEANING REQUEST*
-
-━━━━━━━━━━━━
-
-🧾 *Order #{order_id}*
-
-👤 *Client:* {d['name']}
-📞 *Phone:* {d['phone']}
-
-🧹 *Service:* {d['cleaning']}
-🛏 *Bedrooms:* {d['bedrooms']}
-📅 *Date:* {d['date']}
-
-✨ *Extras:* {", ".join(d['extras']) if d['extras'] else "None"}
-
-📍 *Address*
-{d['address']}
-
-━━━━━━━━━━━━
-
-💰 *Price:* ${d['price']}
-""",
-parse_mode="Markdown"
-)
+            ADMIN_ID,
+            f"New booking #{order_id}\n{d['cleaning']} {d['bedrooms']} bedrooms\n{d['date']}"
+        )
 
         bot.send_message(
-m.chat.id,
-"""
-✅ *Booking confirmed*
-
-Our manager will contact you shortly.
-
-Thank you for choosing  
-*Cleaning Pros Team* 🧼
-""",
-reply_markup=main_menu(m.chat.id),
-parse_mode="Markdown"
-)
+            m.chat.id,
+            "Booking confirmed",
+            reply_markup=main_menu(m.chat.id)
+        )
 
         del user_data[m.chat.id]
-
-# ---------- ADMIN PANEL ----------
-
-@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and "Admin panel" in m.text)
-def admin_panel(m):
-
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("📅 Today bookings")
-    kb.add("📅 Tomorrow bookings")
-    kb.add("💰 Income")
-
-    bot.send_message(
-        m.chat.id,
-        "⚙ Admin panel",
-        reply_markup=kb
-    )
-
-
-# ---------- TODAY ----------
-
-@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and "Today bookings" in m.text)
-def today_bookings(m):
-
-    bookings = load_bookings()
-
-    today = datetime.now().strftime("%b %d")
-
-    result = ""
-
-    for b in bookings:
-
-        if b["date"] == today:
-
-            result += f"""
-🧾 Order #{b['order_id']}
-
-👤 {b['name']}
-📞 {b['phone']}
-
-🧹 {b['cleaning']}
-🛏 {b['bedrooms']} bedrooms
-💰 ${b['price']}
-
-📍 {b['address']}
-
-────────────
-"""
-
-    if result == "":
-        result = "No bookings today"
-
-    bot.send_message(m.chat.id,result)
-
-
-# ---------- TOMORROW ----------
-
-@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and "Tomorrow bookings" in m.text)
-def tomorrow_bookings(m):
-
-    bookings = load_bookings()
-
-    tomorrow = (datetime.now() + timedelta(days=1)).strftime("%b %d")
-
-    result = ""
-
-    for b in bookings:
-
-        if b["date"] == tomorrow:
-
-            result += f"""
-🧾 Order #{b['order_id']}
-
-👤 {b['name']}
-📞 {b['phone']}
-
-🧹 {b['cleaning']}
-🛏 {b['bedrooms']} bedrooms
-💰 ${b['price']}
-
-📍 {b['address']}
-
-────────────
-"""
-
-    if result == "":
-        result = "No bookings tomorrow"
-
-    bot.send_message(m.chat.id,result)
-
-
-# ---------- INCOME ----------
-
-@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and "Income" in m.text)
-def income(m):
-
-    bookings = load_bookings()
-
-    total = sum(i["price"] for i in bookings)
-
-    bot.send_message(
-        m.chat.id,
-        f"💰 Total income: ${total}"
-    )
-
-# ---------- FLOW ----------
-
-@bot.message_handler(content_types=["text"])
-def flow(m):
-
-    if m.chat.id not in user_data:
-        return
-
-    d = user_data[m.chat.id]
-
-    if "step" not in d:
-        return
-
-    # не перехватываем кнопки меню
-    if m.text in [
-        "🧹 Book cleaning",
-        "💰 Prices",
-        "📞 Contact",
-        "⚙ Admin panel",
-        "📅 Today bookings",
-        "📅 Tomorrow bookings",
-        "💰 Income"
-    ]:
-        return
-
-    step = d["step"]
-
 
 bot.infinity_polling(skip_pending=True)
