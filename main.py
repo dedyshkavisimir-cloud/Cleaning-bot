@@ -247,11 +247,7 @@ def save_manual_date(m):
 
 # ---------- FLOW HANDLER ----------
 
-# ---------- FLOW HANDLER ----------
-
-# ---------- FLOW HANDLER ----------
-
-@bot.message_handler(func=lambda m: m.chat.id in user_data and user_data[m.chat.id].get("step") in ["extras","name","phone","address"] and not m.text.startswith(("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")))
+@bot.message_handler(func=lambda m: m.chat.id in user_data and user_data[m.chat.id].get("step") in ["extras","name","phone","address"])
 def flow(m):
 
     d = user_data[m.chat.id]
@@ -259,9 +255,6 @@ def flow(m):
 
     if not m.text:
         return
-
-
-    # ---------- EXTRAS ----------
 
     if step == "extras":
 
@@ -279,37 +272,25 @@ def flow(m):
         return
 
 
-    # ---------- NAME ----------
-
     if step == "name":
 
         d["name"] = m.text
 
-        bot.send_message(
-            m.chat.id,
-            "📞 Enter your phone number"
-        )
+        bot.send_message(m.chat.id, "📞 Enter your phone number")
 
         d["step"] = "phone"
         return
 
 
-    # ---------- PHONE ----------
-
     if step == "phone":
 
         d["phone"] = m.text
 
-        bot.send_message(
-            m.chat.id,
-            "📍 Enter your address"
-        )
+        bot.send_message(m.chat.id, "📍 Enter your address")
 
         d["step"] = "address"
         return
 
-
-    # ---------- ADDRESS ----------
 
     if step == "address":
 
