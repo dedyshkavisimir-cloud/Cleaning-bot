@@ -267,7 +267,7 @@ parse_mode="Markdown"
             "❌ Wrong format.\nUse MM-DD-YYYY\nExample: 06-25-2026"
         )
 
-    return
+        return
 
     # EXTRAS
     if step == "extras":
