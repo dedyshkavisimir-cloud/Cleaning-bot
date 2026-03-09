@@ -231,8 +231,7 @@ def save_manual_date(m):
             m.chat.id,
             "❌ Wrong format\n\nUse MM/DD/YYYY\nExample: 06/25/2026"
         )
-
-
+        
 # ---------- NAME ----------
 
 @bot.message_handler(func=lambda m: m.chat.id in user_data and "name" not in user_data[m.chat.id])
