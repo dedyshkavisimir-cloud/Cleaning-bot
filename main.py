@@ -333,7 +333,7 @@ def flow(m):
 
         kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
         kb.add("Inside oven","Inside fridge","Windows")
-        kb.add("Done")
+        kb.add("Done","Skip")
 
         bot.send_message(
             m.chat.id,
@@ -349,37 +349,47 @@ def flow(m):
     # MANUAL DATE
     if step == "manual_date":
 
-        try:
-            datetime.strptime(m.text,"%m-%d-%Y")
+    try:
 
-            d["date"] = m.text
+        date = datetime.strptime(m.text,"%m-%d-%Y")
 
-            kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            kb.add("Inside oven","Inside fridge","Windows")
-            kb.add("Done")
+        if date.date() < datetime.now().date():
 
             bot.send_message(
                 m.chat.id,
-                "✨ Select extras",
-                reply_markup=kb
+                "❌ Date cannot be in the past"
             )
+            return
 
-            d["extras"] = []
-            d["step"] = "extras"
+        d["date"] = m.text
 
-        except:
-            bot.send_message(
-                m.chat.id,
-                "❌ Wrong format\nUse MM-DD-YYYY"
-            )
+        kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        kb.add("Inside oven","Inside fridge","Windows")
+        kb.add("Done","Skip")
 
-        return
+        bot.send_message(
+            m.chat.id,
+            "✨ Select extra services",
+            reply_markup=kb
+        )
+
+        d["extras"] = []
+        d["step"] = "extras"
+
+    except:
+
+        bot.send_message(
+            m.chat.id,
+            "❌ Wrong format\nUse MM-DD-YYYY"
+        )
+
+    return
 
 
     # EXTRAS
     if step == "extras":
 
-        if m.text == "Done":
+        if m.text in ["Done","Skip"]:
 
             bot.send_message(
                 m.chat.id,
@@ -470,18 +480,29 @@ f"""
         )
 
         bot.send_message(
-            m.chat.id,
-"""
+m.chat.id,
+f"""
+📋 *Booking Summary*
+
+🧹 Service: {d['cleaning']}
+🏠 Bedrooms: {d['bedrooms']}
+📅 Date: {d['date']}
+
+✨ Extras: {extras}
+
+💰 Total price: ${d['price']}
+
+━━━━━━━━━━━━
+
 ✅ *Booking confirmed*
 
 Our manager will contact you shortly.
-
 Thank you for choosing  
 *Cleaning Pros Team* 🧼
 """,
-            reply_markup=main_menu(m.chat.id),
-            parse_mode="Markdown"
-        )
+reply_markup=main_menu(m.chat.id),
+parse_mode="Markdown"
+)
 
         del user_data[m.chat.id]
 
