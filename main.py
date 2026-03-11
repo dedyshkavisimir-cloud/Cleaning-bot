@@ -46,6 +46,7 @@ def main_menu(user):
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
     kb.add("🧹 Book cleaning")
+    kb.add("🌬 Dryer vent cleaning")
     kb.add("💰 Prices","📞 Contact")
 
     if user == ADMIN_ID:
@@ -117,6 +118,31 @@ manager@excellentsolution.online
 """,
 parse_mode="Markdown"
 )
+
+
+# ---------- DRYER VENT ----------
+
+@bot.message_handler(func=lambda m: m.text == "🌬 Dryer vent cleaning")
+def dryer_vent(m):
+
+    user_data[m.chat.id] = {}
+    d = user_data[m.chat.id]
+
+    bot.send_message(
+        m.chat.id,
+        """
+🌬 *Dryer Vent Cleaning*
+
+Estimated price: *$89 – $129*
+
+Enter preferred service date
+Example: 06-25-2026
+""",
+        parse_mode="Markdown"
+    )
+
+    d["step"] = "vent_date"
+
 
 # ---------- BOOK CLEANING ----------
 
@@ -392,6 +418,80 @@ def flow(m):
         return
 
 
+        # DRYER VENT DATE
+    if step == "vent_date":
+
+        d["date"] = m.text
+
+        bot.send_message(
+            m.chat.id,
+            "👤 Enter your name"
+        )
+
+        d["step"] = "vent_name"
+        return
+
+
+    # NAME
+    if step == "vent_name":
+
+        d["name"] = m.text
+
+        bot.send_message(
+            m.chat.id,
+            "📞 Enter your phone number"
+        )
+
+        d["step"] = "vent_phone"
+        return
+
+
+    # PHONE
+    if step == "vent_phone":
+
+        d["phone"] = m.text
+
+        bot.send_message(
+            m.chat.id,
+            "📍 Enter your address"
+        )
+
+        d["step"] = "vent_address"
+        return
+
+
+    # ADDRESS
+    if step == "vent_address":
+
+        d["address"] = m.text
+
+        bot.send_message(
+            ADMIN_ID,
+f"""
+🔥 *NEW DRYER VENT REQUEST*
+
+👤 {d['name']}
+📞 {d['phone']}
+📅 {d['date']}
+
+📍 Address:
+{d['address']}
+""",
+        parse_mode="Markdown"
+        )
+
+        bot.send_message(
+            m.chat.id,
+"""
+✅ Request received!
+
+Our manager will contact you shortly.
+"""
+        )
+
+        del user_data[m.chat.id]
+        return
+    
     # EXTRAS
     if step == "extras":
 
