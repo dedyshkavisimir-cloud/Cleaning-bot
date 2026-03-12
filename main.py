@@ -533,7 +533,6 @@ def flow(m):
             m.chat.id,
             "📸 Send a photo for more accurate estimate or type skip",
             reply_markup=kb
-        )
             parse_mode="Markdown"
         )
 
