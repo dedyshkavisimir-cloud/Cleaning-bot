@@ -426,7 +426,7 @@ def flow(m):
             )
 
         return
-
+        step = d["step"]
 
     # DRYER VENT DATE
 
