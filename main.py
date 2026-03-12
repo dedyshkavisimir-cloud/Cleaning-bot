@@ -106,9 +106,34 @@ m.chat.id,
 • 1 bedroom — $200  
 • 2 bedrooms — $250  
 • 3 bedrooms — $300
+
+━━━━━━━━━━━━
+
+🌪 *Dryer Vent Cleaning*  
+Estimated price: **$89-229**
+
+Final price depends on:
+• vent length  
+• roof or wall access  
+• heavy lint / bird nest
+
+━━━━━━━━━━━━
+
+💧 *Power Washing*
+
+• Driveway — **$180-240**  
+• House exterior — **$200-400**  
+• Deck / Patio — **$120-250**  
+• Fence — **$150-300**  
+• Roof — **$250-500**
+
+Final price depends on:
+• surface size  
+• moss removal  
+• surface type
 """,
-parse_mode="Markdown"
-)
+        parse_mode="Markdown"
+    )
 
 # ---------- CONTACT ----------
 
