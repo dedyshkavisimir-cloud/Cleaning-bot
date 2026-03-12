@@ -532,7 +532,7 @@ def flow(m):
         bot.send_message(
             m.chat.id,
             "📸 Send a photo for more accurate estimate or type skip",
-            reply_markup=kb
+            reply_markup=kb,
             parse_mode="Markdown"
         )
 
