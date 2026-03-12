@@ -490,33 +490,23 @@ def flow(m):
         username = m.from_user.username or "no username"
 
         # --- если пользователь отправил фото ---
-        if m.content_type == "photo":
+    if m.content_type == "photo":
 
-            photo_id = m.photo[-1].file_id
-            caption = m.caption if m.caption else ""
+        photo_id = m.photo[-1].file_id
 
-            bot.send_photo(
-                ADMIN_ID,
-                photo_id,
-                caption=f"""
-    ⚡ NEW QUICK REQUEST
+        if "photos" not in d:
+            d["photos"] = []
 
-    👤 {name}
-    📞 @{username}
+        d["photos"].append(photo_id)
 
-    {caption}
-    """
+        if not d.get("photo_message_sent"):
+            bot.send_message(
+                m.chat.id,
+                "📸 Photos received.\n\nYou can send more photos or type description of the job."
             )
+            d["photo_message_sent"] = True
 
-            # сообщение клиенту показываем только один раз
-            if "photos_started" not in d:
-                bot.send_message(
-                    m.chat.id,
-                    "📸 Photos received.\n\nYou can send more photos or type description of the job."
-                )
-                d["photos_started"] = True
-
-            return
+        return
 
 
         # --- если пользователь отправил текст ---
