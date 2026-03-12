@@ -128,6 +128,8 @@ def dryer_vent(m):
     user_data[m.chat.id] = {}
     d = user_data[m.chat.id]
 
+    d["step"] = "vent_date"
+
     bot.send_message(
     m.chat.id,
     """
