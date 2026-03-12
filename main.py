@@ -13,7 +13,7 @@ bot = telebot.TeleBot(TOKEN)
 
 app = Flask(__name__)
 
-WEBHOOK_URL = os.environ.get("RAILWAY_STATIC_URL") + "/webhook"
+WEBHOOK_URL = "https://cleaning-bot-production-6581.up.railway.app/webhook"
 
 
 
