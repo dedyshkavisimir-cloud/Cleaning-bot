@@ -56,6 +56,7 @@ def main_menu(user):
     kb.add("🧹 Book house cleaning")
     kb.add("🌬 Dryer vent cleaning")
     kb.add("💧 Power washing")
+    
     kb.add("💰 Prices","📞 Contact")
 
     if user == ADMIN_ID:
@@ -535,19 +536,19 @@ def flow(m):
         return
 
     # POWER PHOTO
-if step == "power_photo":
+    if step == "power_photo":
 
-    if m.content_type == "photo":
+        if m.content_type == "photo":
 
-        d["photo"] = m.photo[-1].file_id
+            d["photo"] = m.photo[-1].file_id
 
-        bot.send_message(
-            m.chat.id,
-            "📍 Enter your address"
-        )
+            bot.send_message(
+                m.chat.id,
+                "📍 Enter your address"
+            )
 
-        d["step"] = "power_address"
-        return
+            d["step"] = "power_address"
+            return
 
     if m.text.lower() == "skip":
 
@@ -560,19 +561,19 @@ if step == "power_photo":
         return
 
     # POWER ADDRESS
-if step == "power_address":
+    if step == "power_address":
 
-    d["address"] = m.text
+        d["address"] = m.text
 
-    bot.send_message(
-        m.chat.id,
-        "👤 Enter your name"
-    )
+        bot.send_message(
+            m.chat.id,
+            "👤 Enter your name"
+        )
 
-    d["step"] = "power_name"
-    return
+        d["step"] = "power_name"
+        return
 
-if step == "power_name":
+    if step == "power_name":
 
         d["name"] = m.text
 
@@ -585,38 +586,38 @@ if step == "power_name":
         return
     
     # POWER PHONE
-if step == "power_phone":
+    if step == "power_phone":
 
-    d["phone"] = m.text
+        d["phone"] = m.text
 
-    bot.send_message(
-        ADMIN_ID,
-f"""
-💧 *NEW POWER WASH REQUEST*
+        bot.send_message(
+            ADMIN_ID,
+    f"""
+    💧 *NEW POWER WASH REQUEST*
 
-Surface: {d['surface']}
+    Surface: {d['surface']}
 
-👤 {d['name']}
-📞 {d['phone']}
+    👤 {d['name']}
+    📞 {d['phone']}
 
-📍 Address:
-{d['address']}
-""",
-        parse_mode="Markdown"
-    )
+    📍 Address:
+    {d['address']}
+    """,
+            parse_mode="Markdown"
+        )
 
-    bot.send_message(
-        m.chat.id,
-"""
-✅ Request received!
+        bot.send_message(
+            m.chat.id,
+    """
+    ✅ Request received!
 
-We will contact you shortly.
-""",
-        reply_markup=main_menu(m.chat.id)
-    )
+    We will contact you shortly.
+    """,
+            reply_markup=main_menu(m.chat.id)
+        )
 
-    del user_data[m.chat.id]
-    return
+        del user_data[m.chat.id]
+        return
     
     # NAME
     if step == "vent_name":
