@@ -71,11 +71,21 @@ def start(m):
 
     bot.send_message(
         m.chat.id,
-        "🧼 *Cleaning Pros Team*\nProfessional cleaning service",
+    """
+    🧼 *Cleaning Pros Team*
+
+    Professional cleaning services
+
+    👇 Tap *Menu* below to choose a service
+
+    • House cleaning  
+    • Dryer vent cleaning  
+    • Power washing
+    """,
         reply_markup=main_menu(m.chat.id),
         parse_mode="Markdown"
     )
-
+    
 # ---------- PRICES ----------
 
 @bot.message_handler(func=lambda m: m.text == "💰 Prices")
@@ -414,6 +424,16 @@ def flow(m):
     ]:
         return
     if m.chat.id not in user_data:
+        bot.send_message(
+            m.chat.id,
+        """
+        👋 Welcome!
+
+        Please choose a service below 👇
+        """,
+            reply_markup=main_menu(m.chat.id)
+        )
+        
         return
 
     d = user_data[m.chat.id]
