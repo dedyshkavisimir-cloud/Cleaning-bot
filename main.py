@@ -53,6 +53,7 @@ def main_menu(user):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
+    kb.add("⚡ Quick estimate")
     kb.add("🧹 Book house cleaning")
     kb.add("🌬 Dryer vent cleaning")
     kb.add("💧 Power washing")
@@ -137,6 +138,28 @@ Final price depends on:
 • surface size  
 • moss removal  
 • surface type
+""",
+        parse_mode="Markdown"
+    )
+
+# ---------- QUICK ESTIMATE ----------
+
+@bot.message_handler(func=lambda m: m.text == "⚡ Quick estimate")
+def quick_estimate(m):
+
+    user_data[m.chat.id] = {"step": "quick_estimate"}
+
+    bot.send_message(
+        m.chat.id,
+"""
+⚡ *Quick estimate*
+
+Send a short description of your request.
+
+Example:
+• Driveway power washing
+• 3 bedroom deep cleaning
+• Dryer vent cleaning
 """,
         parse_mode="Markdown"
     )
@@ -432,12 +455,62 @@ def flow(m):
         
         return
 
+    # QUICK ESTIMATE
+    if m.text == "⚡ Quick estimate":
+
+        user_data[m.chat.id] = {"step": "quick_estimate"}
+
+        bot.send_message(
+            m.chat.id,
+            """
+    ⚡ *Quick estimate*
+
+    Send a short description of your request.
+
+    Example:
+    • Driveway power washing
+    • 3 bedroom deep cleaning
+    • Dryer vent cleaning
+    """,
+            parse_mode="Markdown"
+        )
+        return
+        
     d = user_data[m.chat.id]
 
     if "step" not in d:
         return
 
     step = d["step"]
+
+    # QUICK ESTIMATE TEXT
+    if step == "quick_estimate":
+
+        bot.send_message(
+            ADMIN_ID,
+    f"""
+    ⚡ NEW QUICK REQUEST
+
+    👤 {m.from_user.first_name}
+    📞 @{m.from_user.username}
+
+    Message:
+    {m.text}
+    """
+        )
+
+        bot.send_message(
+            m.chat.id,
+            """
+    ✅ Request received!
+
+    We will contact you shortly.
+    """,
+            reply_markup=main_menu(m.chat.id)
+        )
+
+        del user_data[m.chat.id]
+        return
 
     # DATE
     if step == "date":
