@@ -685,6 +685,12 @@ def flow(m):
     """,
             parse_mode="Markdown"
         )
+    if "photo" in d:
+        bot.send_photo(
+            ADMIN_ID,
+            d["photo"],
+            caption="📸 Power washing estimate photo"
+        )
 
         bot.send_message(
             m.chat.id,
