@@ -159,12 +159,13 @@ def quick_estimate(m):
 """
 ⚡ Quick estimate
 
-Send a short description of the job.
+Please send a short description of the job and attach photos if possible.
 
 Example:
-I need driveway power washing in Bellevue
+Driveway power washing in Bellevue.
 
-You can attach one or several photos.
+This helps us give you a faster estimate.
+        
 """,
         parse_mode="Markdown"
     )
@@ -468,15 +469,15 @@ def flow(m):
         bot.send_message(
             m.chat.id,
             """
-    ⚡ *Quick estimate*
+    ⚡ Quick estimate
 
-    Send a short description of your request.
+        Please send a short description of the job and attach photos if possible.
 
-    Example:
-    • Driveway power washing
-    • 3 bedroom deep cleaning
-    • Dryer vent cleaning
-    """,
+        Example:
+        Driveway power washing in Bellevue.
+
+        This helps us give you a faster estimate.
+        """,
             parse_mode="Markdown"
         )
         return
