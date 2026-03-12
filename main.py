@@ -9,8 +9,7 @@ ADMIN_ID = 146998462
 
 bot = telebot.TeleBot(TOKEN)
 
-bot.remove_webhook()
-time.sleep(1)
+bot.delete_webhook(drop_pending_updates=True)
 
 user_data = {}
 
