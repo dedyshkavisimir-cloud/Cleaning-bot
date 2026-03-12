@@ -573,13 +573,27 @@ def flow(m):
 
             bot.send_message(
                 m.chat.id,
-                "📍 Enter your address"
+                "📅 Choose preferred service date"
             )
 
-            d["step"] = "power_address"
+            d["step"] = "power_date"
             return
 
-    if m.text.lower() == "skip":
+
+        elif m.text.lower() == "skip":
+
+            bot.send_message(
+                m.chat.id,
+                "📅 Choose preferred service date"
+            )
+
+            d["step"] = "power_date"
+            return
+
+    # POWER DATE
+    if step == "power_date":
+
+        d["date"] = m.text
 
         bot.send_message(
             m.chat.id,
@@ -625,7 +639,8 @@ def flow(m):
     💧 *NEW POWER WASH REQUEST*
 
     Surface: {d['surface']}
-
+    
+    📅 {d['date']}
     👤 {d['name']}
     📞 {d['phone']}
 
