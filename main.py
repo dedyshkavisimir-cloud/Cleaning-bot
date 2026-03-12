@@ -427,9 +427,9 @@ def flow(m):
         bot.send_message(
             m.chat.id,
         """
-        👋 Welcome!
+        🧼 *Cleaning Pros Team*
 
-        Please choose a service below 👇
+        👇 Tap *Menu* below to choose a service
         """,
             reply_markup=main_menu(m.chat.id)
         )
