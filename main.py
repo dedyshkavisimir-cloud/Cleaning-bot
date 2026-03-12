@@ -493,18 +493,47 @@ def flow(m):
         if m.content_type == "photo":
 
             photo_id = m.photo[-1].file_id
+            caption = m.caption if m.caption else ""
 
             if "photos" not in d:
                 d["photos"] = []
 
             d["photos"].append(photo_id)
 
+            # если есть caption — сразу отправляем заявку
+            if caption:
+
+                bot.send_message(
+                    ADMIN_ID,
+                    f"""
+    ⚡ NEW QUICK REQUEST
+
+    👤 {name}
+    📞 @{username}
+
+    📝 {caption}
+    """
+                )
+
+                media = [types.InputMediaPhoto(p) for p in d["photos"]]
+                bot.send_media_group(ADMIN_ID, media)
+
+                bot.send_message(
+                    m.chat.id,
+                    "✅ Thank you! Your request has been sent.",
+                    reply_markup=main_menu(m.chat.id)
+                )
+
+                del user_data[m.chat.id]
+                return
+
+            # иначе просто сохраняем фото
             if not d.get("photo_message_sent"):
+                d["photo_message_sent"] = True
                 bot.send_message(
                     m.chat.id,
                     "📸 Photos received.\n\nYou can send more photos or type description of the job."
                 )
-                d["photo_message_sent"] = True
 
             return
 
@@ -529,24 +558,16 @@ def flow(m):
             # если были фото — отправляем альбом
             if "photos" in d:
 
-                media = []
-
-                for photo in d["photos"]:
-                    media.append(types.InputMediaPhoto(photo))
-
+                media = [types.InputMediaPhoto(p) for p in d["photos"]]
                 bot.send_media_group(ADMIN_ID, media)
 
             bot.send_message(
                 m.chat.id,
-                """
-    ✅ Thank you! Your request has been sent.
-    We will contact you soon.
-    """,
+                "✅ Thank you! Your request has been sent. We will contact you soon.",
                 reply_markup=main_menu(m.chat.id)
             )
 
             del user_data[m.chat.id]
-
             return
 
     # DATE
