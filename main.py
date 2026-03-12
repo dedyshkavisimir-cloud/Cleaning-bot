@@ -526,7 +526,7 @@ def flow(m):
 
                 bot.send_message(
                     m.chat.id,
-                    "✅ Thank you! Your request has been sent.",
+                    "✅ Thank you! Your request has been sent. We will contact you soon.",
                     reply_markup=main_menu(m.chat.id)
                 )
 
@@ -828,9 +828,7 @@ def flow(m):
         bot.send_message(
             m.chat.id,
     """
-    ✅ Request received!
-
-    We will contact you shortly.
+    ✅ Thank you! Your request has been sent. We will contact you soon.
     """,
             reply_markup=main_menu(m.chat.id)
         )
@@ -897,9 +895,7 @@ def flow(m):
         bot.send_message(
             m.chat.id,
 """
-✅ Request received!
-
-Our manager will contact you shortly.
+✅ Thank you! Your request has been sent. We will contact you soon.
 """
         )
 
