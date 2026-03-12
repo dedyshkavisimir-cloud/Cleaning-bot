@@ -547,7 +547,7 @@ if step == "power_photo":
         )
 
         d["step"] = "power_address"
-            return
+        return
 
     if m.text.lower() == "skip":
 
@@ -557,7 +557,7 @@ if step == "power_photo":
         )
 
         d["step"] = "power_address"
-            return
+        return
 
     # POWER ADDRESS
 if step == "power_address":
@@ -572,7 +572,7 @@ if step == "power_address":
     d["step"] = "power_name"
         return
 
-    if step == "power_name":
+if step == "power_name":
 
         d["name"] = m.text
 
