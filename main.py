@@ -489,28 +489,30 @@ def flow(m):
         name = m.from_user.first_name
         username = m.from_user.username or "no username"
 
-        # --- если пользователь отправил фото ---
-    if m.content_type == "photo":
+        # ---------- PHOTO ----------
+        if m.content_type == "photo":
 
-        photo_id = m.photo[-1].file_id
+            photo_id = m.photo[-1].file_id
 
-        if "photos" not in d:
-            d["photos"] = []
+            if "photos" not in d:
+                d["photos"] = []
 
-        d["photos"].append(photo_id)
+            d["photos"].append(photo_id)
 
-        if not d.get("photo_message_sent"):
-            bot.send_message(
-                m.chat.id,
-                "📸 Photos received.\n\nYou can send more photos or type description of the job."
-            )
-            d["photo_message_sent"] = True
+            if not d.get("photo_message_sent"):
+                bot.send_message(
+                    m.chat.id,
+                    "📸 Photos received.\n\nYou can send more photos or type description of the job."
+                )
+                d["photo_message_sent"] = True
 
-        return
+            return
 
 
-        # --- если пользователь отправил текст ---
+        # ---------- TEXT ----------
         if m.content_type == "text":
+
+            text = m.text
 
             bot.send_message(
                 ADMIN_ID,
@@ -520,10 +522,19 @@ def flow(m):
     👤 {name}
     📞 @{username}
 
-    Message:
-    {m.text}
+    📝 {text}
     """
             )
+
+            # если были фото — отправляем альбом
+            if "photos" in d:
+
+                media = []
+
+                for photo in d["photos"]:
+                    media.append(types.InputMediaPhoto(photo))
+
+                bot.send_media_group(ADMIN_ID, media)
 
             bot.send_message(
                 m.chat.id,
@@ -535,6 +546,7 @@ def flow(m):
             )
 
             del user_data[m.chat.id]
+
             return
 
     # DATE
