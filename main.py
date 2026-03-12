@@ -129,19 +129,29 @@ def dryer_vent(m):
     d = user_data[m.chat.id]
 
     bot.send_message(
-        m.chat.id,
-        """
-🌬 *Dryer Vent Cleaning*
+    m.chat.id,
+    """
+    🌬 *Dryer Vent Cleaning*
 
-Estimated price: *$89 – $129*
+    💰 *Estimated price:* $89 – $229
 
-Enter preferred service date
-Example: 06-25-2026
-""",
+    Final price depends on:
+
+    • vent length  
+    • roof access  
+    • heavy lint buildup  
+    • bird nest removal  
+
+    Most jobs take *30–45 minutes*
+
+    ━━━━━━━━━━━━
+
+    📅 *Enter preferred service date*
+
+    Example: 06-25-2026
+    """,
         parse_mode="Markdown"
     )
-
-    d["step"] = "vent_date"
 
 
 # ---------- BOOK CLEANING ----------
@@ -418,10 +428,31 @@ def flow(m):
         return
 
 
-        # DRYER VENT DATE
+    # DRYER VENT DATE
+
     if step == "vent_date":
 
         d["date"] = m.text
+
+        kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        kb.add("Side wall")
+        kb.add("Roof")
+        kb.add("Not sure")
+
+        bot.send_message(
+            m.chat.id,
+            "📍 Where is the dryer vent located?",
+            reply_markup=kb
+        )
+
+        d["step"] = "vent_location"
+        return
+
+    # VENT LOCATION
+
+    if step == "vent_location":
+
+        d["location"] = m.text
 
         bot.send_message(
             m.chat.id,
@@ -429,7 +460,7 @@ def flow(m):
         )
 
         d["step"] = "vent_name"
-        return
+        return 
 
 
     # NAME
@@ -467,17 +498,19 @@ def flow(m):
 
         bot.send_message(
             ADMIN_ID,
-f"""
-🔥 *NEW DRYER VENT REQUEST*
+        f"""
+        🔥 *NEW DRYER VENT REQUEST*
 
-👤 {d['name']}
-📞 {d['phone']}
-📅 {d['date']}
+        👤 {d['name']}
+        📞 {d['phone']}
 
-📍 Address:
-{d['address']}
-""",
-        parse_mode="Markdown"
+        📅 {d['date']}
+        📍 Vent location: {d['location']}
+
+        📍 Address:
+        {d['address']}
+        """,
+            parse_mode="Markdown"
         )
 
         bot.send_message(
