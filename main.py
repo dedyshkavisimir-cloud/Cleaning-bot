@@ -152,14 +152,14 @@ def quick_estimate(m):
     bot.send_message(
         m.chat.id,
 """
-⚡ *Quick estimate*
+⚡ Quick estimate
 
-Send a short description of your request.
+Send a short description of the job.
 
 Example:
-• Driveway power washing
-• 3 bedroom deep cleaning
-• Dryer vent cleaning
+I need driveway power washing in Bellevue
+
+You can also attach a photo.
 """,
         parse_mode="Markdown"
     )
@@ -484,12 +484,34 @@ def flow(m):
     step = d["step"]
 
     # QUICK ESTIMATE TEXT
+    
     if step == "quick_estimate":
 
-        bot.send_message(
-            ADMIN_ID,
-    f"""
+        # если пользователь отправил фото
+        if m.content_type == "photo":
+
+            photo_id = m.photo[-1].file_id
+
+            bot.send_photo(
+                ADMIN_ID,
+                photo_id,
+                caption=f"""
     ⚡ NEW QUICK REQUEST
+
+    👤 {m.from_user.first_name}
+    📞 @{m.from_user.username}
+
+    Client sent a photo
+    """
+            )
+
+        # если пользователь отправил текст
+        elif m.content_type == "text":
+
+            bot.send_message(
+                ADMIN_ID,
+                f"""
+⚡ NEW QUICK REQUEST
 
     👤 {m.from_user.first_name}
     📞 @{m.from_user.username}
@@ -497,7 +519,7 @@ def flow(m):
     Message:
     {m.text}
     """
-        )
+            )
 
         bot.send_message(
             m.chat.id,
