@@ -375,7 +375,7 @@ def income(m):
 
 # ---------- FLOW ----------
 
-@bot.message_handler(content_types=["text"],["photo"])
+@bot.message_handler(content_types=["text","photo"])
 def flow(m):
     
     if m.text in [
