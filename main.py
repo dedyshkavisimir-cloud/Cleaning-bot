@@ -570,7 +570,7 @@ if step == "power_address":
     )
 
     d["step"] = "power_name"
-        return
+    return
 
 if step == "power_name":
 
@@ -582,7 +582,7 @@ if step == "power_name":
         )
 
         d["step"] = "power_phone"
-            return
+        return
     
     # POWER PHONE
 if step == "power_phone":
