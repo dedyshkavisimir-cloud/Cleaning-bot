@@ -574,15 +574,15 @@ if step == "power_address":
 
     if step == "power_name":
 
-    d["name"] = m.text
+        d["name"] = m.text
 
-    bot.send_message(
-        m.chat.id,
-        "📞 Enter your phone number"
-    )
+        bot.send_message(
+            m.chat.id,
+            "📞 Enter your phone number"
+        )
 
-    d["step"] = "power_phone"
-    return
+        d["step"] = "power_phone"
+        return
     
     # POWER PHONE
 if step == "power_phone":
