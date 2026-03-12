@@ -3,13 +3,19 @@ from telebot import types
 from datetime import datetime, timedelta
 import json
 import time
+import os
+from flask import Flask, request
 
 TOKEN = "8695031161:AAFqAoGy2m14wnLOjuEywRG5FSKs77GiJRI"
 ADMIN_ID = 146998462
 
 bot = telebot.TeleBot(TOKEN)
 
-bot.delete_webhook(drop_pending_updates=True)
+app = Flask(__name__)
+
+WEBHOOK_URL = os.environ.get("RAILWAY_STATIC_URL") + "/webhook"
+
+
 
 user_data = {}
 
@@ -1023,11 +1029,20 @@ parse_mode="Markdown"
 )
 
         del user_data[m.chat.id]
+        return
 
 
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    json_str = request.get_data().decode('UTF-8')
+    update = telebot.types.Update.de_json(json_str)
+    bot.process_new_updates([update])
+    return "OK"
 
-bot.infinity_polling(
-    timeout=60,
-    long_polling_timeout=60,
-    skip_pending=True
-)
+
+if __name__ == "__main__":
+    bot.remove_webhook()
+    time.sleep(1)
+    bot.set_webhook(url=WEBHOOK_URL)
+
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
