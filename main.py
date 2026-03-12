@@ -375,7 +375,7 @@ def income(m):
 
 # ---------- FLOW ----------
 
-@bot.message_handler(content_types=["text"])
+@bot.message_handler(content_types=["text",["photo"])
 def flow(m):
     
     if m.text in [
@@ -526,9 +526,14 @@ def flow(m):
             parse_mode="Markdown"
         )
 
+        kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        kb.add("Skip")
+
         bot.send_message(
             m.chat.id,
-            "📸 Send a photo for more accurate estimate or type *skip*",
+            "📸 Send a photo for more accurate estimate or type skip",
+            reply_markup=kb
+        )
             parse_mode="Markdown"
         )
 
