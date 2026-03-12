@@ -483,11 +483,13 @@ def flow(m):
 
     step = d["step"]
 
-    # QUICK ESTIMATE TEXT
-    
+    # QUICK ESTIMATE
     if step == "quick_estimate":
 
-        # если пользователь отправил фото
+        name = m.from_user.first_name
+        username = m.from_user.username or "no username"
+
+        # если отправили фото
         if m.content_type == "photo":
 
             photo_id = m.photo[-1].file_id
@@ -498,41 +500,48 @@ def flow(m):
                 caption=f"""
     ⚡ NEW QUICK REQUEST
 
-    👤 {m.from_user.first_name}
-    📞 @{m.from_user.username}
+    👤 {name}
+    📞 @{username}
 
-    Client sent a photo
+    Photo received
     """
             )
 
-        # если пользователь отправил текст
-        elif m.content_type == "text":
+            bot.send_message(
+                m.chat.id,
+                "📸 Photo received. You can send more photos or type a message."
+            )
+
+            return
+
+
+        # если отправили текст
+        if m.content_type == "text":
 
             bot.send_message(
                 ADMIN_ID,
                 f"""
-⚡ NEW QUICK REQUEST
+    ⚡ NEW QUICK REQUEST
 
-    👤 {m.from_user.first_name}
-    📞 @{m.from_user.username}
+    👤 {name}
+    📞 @{username}
 
     Message:
     {m.text}
     """
             )
 
-        bot.send_message(
-            m.chat.id,
-            """
-    ✅ Request received!
-
-    We will contact you shortly.
+            bot.send_message(
+                m.chat.id,
+                """
+    ✅ Thank you! Your request has been sent.
+    We will contact you soon.
     """,
-            reply_markup=main_menu(m.chat.id)
-        )
+                reply_markup=main_menu(m.chat.id)
+            )
 
-        del user_data[m.chat.id]
-        return
+            del user_data[m.chat.id]
+            return
 
     # DATE
     if step == "date":
