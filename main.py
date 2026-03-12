@@ -9,6 +9,18 @@ ADMIN_ID = 146998462
 
 bot = telebot.TeleBot(TOKEN)
 
+import os
+import sys
+
+LOCK_FILE = "/tmp/bot.lock"
+
+if os.path.exists(LOCK_FILE):
+    print("Bot already running. Exiting.")
+    sys.exit()
+
+with open(LOCK_FILE, "w") as f:
+    f.write("running")
+
 bot.delete_webhook(drop_pending_updates=True)
 
 user_data = {}
@@ -1026,11 +1038,8 @@ parse_mode="Markdown"
 
 
 
-import time
-
-while True:
-    try:
-        bot.infinity_polling(skip_pending=True, timeout=30, long_polling_timeout=30)
-    except Exception as e:
-        print("Polling error:", e)
-        time.sleep(5)
+bot.infinity_polling(
+    timeout=60,
+    long_polling_timeout=60,
+    skip_pending=True
+)
