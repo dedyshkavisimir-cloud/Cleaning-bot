@@ -9,18 +9,6 @@ ADMIN_ID = 146998462
 
 bot = telebot.TeleBot(TOKEN)
 
-import os
-import sys
-
-LOCK_FILE = "/tmp/bot.lock"
-
-if os.path.exists(LOCK_FILE):
-    print("Bot already running. Exiting.")
-    sys.exit()
-
-with open(LOCK_FILE, "w") as f:
-    f.write("running")
-
 bot.delete_webhook(drop_pending_updates=True)
 
 user_data = {}
