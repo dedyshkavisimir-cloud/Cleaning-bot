@@ -584,7 +584,15 @@ def flow(m):
 
             bot.send_message(
                 m.chat.id,
-                "📅 Choose preferred service date"
+            """
+            📅 *Enter preferred service date*
+
+            Format: **MM-DD-YYYY**
+
+            Example:
+            06-25-2026
+            """,
+            parse_mode="Markdown"
             )
 
             d["step"] = "power_date"
