@@ -26,6 +26,14 @@ extras_prices = {
     "Windows": 40
 }
 
+power_prices = {
+    "Driveway": "180–240",
+    "House exterior": "200–400",
+    "Deck / Patio": "120–250",
+    "Fence": "150–300",
+    "Roof": "250–500"
+}
+
 # ---------- STORAGE ----------
 
 def load_bookings():
@@ -45,8 +53,9 @@ def main_menu(user):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
-    kb.add("🧹 Book cleaning")
+    kb.add("🧹 Book house cleaning")
     kb.add("🌬 Dryer vent cleaning")
+    kb.add("💧 Power washing")
     kb.add("💰 Prices","📞 Contact")
 
     if user == ADMIN_ID:
@@ -155,10 +164,38 @@ def dryer_vent(m):
         parse_mode="Markdown"
     )
 
+# ---------- POWER WASHING ----------
+
+@bot.message_handler(func=lambda m: m.text == "💧 Power washing")
+def power_washing(m):
+
+    user_data[m.chat.id] = {}
+    d = user_data[m.chat.id]
+
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+    kb.add("Driveway")
+    kb.add("House exterior")
+    kb.add("Deck / Patio")
+    kb.add("Fence")
+    kb.add("Roof")
+
+    bot.send_message(
+        m.chat.id,
+        """
+💧 *Power Washing*
+
+Select surface type
+""",
+        reply_markup=kb,
+        parse_mode="Markdown"
+    )
+
+    d["step"] = "power_surface"
 
 # ---------- BOOK CLEANING ----------
 
-@bot.message_handler(func=lambda m: m.text == "🧹 Book cleaning")
+@bot.message_handler(func=lambda m: m.text == "🧹 Book house cleaning")
 def cleaning_type(m):
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -464,7 +501,123 @@ def flow(m):
         d["step"] = "vent_name"
         return 
 
+     # POWER SURFACE
+    if step == "power_surface":
 
+        d["surface"] = m.text
+
+        price_range = power_prices.get(m.text,"")
+
+        bot.send_message(
+            m.chat.id,
+    f"""
+    💧 *{m.text} Power Washing*
+
+    💰 Estimated price: ${price_range}
+
+    Final price depends on:
+
+    • surface size  
+    • moss removal  
+    • surface type  
+    • dirt buildup
+    """,
+            parse_mode="Markdown"
+        )
+
+        bot.send_message(
+            m.chat.id,
+            "📸 Send a photo for more accurate estimate or type *skip*",
+            parse_mode="Markdown"
+        )
+
+        d["step"] = "power_photo"
+        return
+
+    # POWER PHOTO
+if step == "power_photo":
+
+    if m.content_type == "photo":
+
+        d["photo"] = m.photo[-1].file_id
+
+        bot.send_message(
+            m.chat.id,
+            "📍 Enter your address"
+        )
+
+        d["step"] = "power_address"
+        return
+
+    if m.text.lower() == "skip":
+
+        bot.send_message(
+            m.chat.id,
+            "📍 Enter your address"
+        )
+
+        d["step"] = "power_address"
+        return
+
+    # POWER ADDRESS
+if step == "power_address":
+
+    d["address"] = m.text
+
+    bot.send_message(
+        m.chat.id,
+        "👤 Enter your name"
+    )
+
+    d["step"] = "power_name"
+    return
+
+    if step == "power_name":
+
+    d["name"] = m.text
+
+    bot.send_message(
+        m.chat.id,
+        "📞 Enter your phone number"
+    )
+
+    d["step"] = "power_phone"
+    return
+    
+    # POWER PHONE
+if step == "power_phone":
+
+    d["phone"] = m.text
+
+    bot.send_message(
+        ADMIN_ID,
+f"""
+💧 *NEW POWER WASH REQUEST*
+
+Surface: {d['surface']}
+
+👤 {d['name']}
+📞 {d['phone']}
+
+📍 Address:
+{d['address']}
+""",
+        parse_mode="Markdown"
+    )
+
+    bot.send_message(
+        m.chat.id,
+"""
+✅ Request received!
+
+We will contact you shortly.
+""",
+        reply_markup=main_menu(m.chat.id)
+    )
+
+    del user_data[m.chat.id]
+    return
+    
     # NAME
     if step == "vent_name":
 
