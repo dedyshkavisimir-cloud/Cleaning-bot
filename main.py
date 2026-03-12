@@ -159,7 +159,7 @@ Send a short description of the job.
 Example:
 I need driveway power washing in Bellevue
 
-You can also attach a photo.
+You can attach one or several photos.
 """,
         parse_mode="Markdown"
     )
@@ -489,10 +489,11 @@ def flow(m):
         name = m.from_user.first_name
         username = m.from_user.username or "no username"
 
-        # если отправили фото
+        # --- если пользователь отправил фото ---
         if m.content_type == "photo":
 
             photo_id = m.photo[-1].file_id
+            caption = m.caption if m.caption else ""
 
             bot.send_photo(
                 ADMIN_ID,
@@ -503,19 +504,22 @@ def flow(m):
     👤 {name}
     📞 @{username}
 
-    Photo received
+    {caption}
     """
             )
 
-            bot.send_message(
-                m.chat.id,
-                "📸 Photo received. You can send more photos or type a message."
-            )
+            # сообщение клиенту показываем только один раз
+            if "photos_started" not in d:
+                bot.send_message(
+                    m.chat.id,
+                    "📸 Photos received.\n\nYou can send more photos or type description of the job."
+                )
+                d["photos_started"] = True
 
             return
 
 
-        # если отправили текст
+        # --- если пользователь отправил текст ---
         if m.content_type == "text":
 
             bot.send_message(
