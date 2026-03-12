@@ -77,10 +77,6 @@ def start(m):
     Professional cleaning services
 
     👇 Tap *Menu* below to choose a service
-
-    • House cleaning  
-    • Dryer vent cleaning  
-    • Power washing
     """,
         reply_markup=main_menu(m.chat.id),
         parse_mode="Markdown"
