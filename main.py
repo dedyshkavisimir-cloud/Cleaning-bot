@@ -1004,4 +1004,11 @@ parse_mode="Markdown"
 
 
 
-bot.infinity_polling(skip_pending=True)
+import time
+
+while True:
+    try:
+        bot.infinity_polling(skip_pending=True, timeout=30, long_polling_timeout=30)
+    except Exception as e:
+        print("Polling error:", e)
+        time.sleep(5)
