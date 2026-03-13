@@ -77,7 +77,23 @@ def admin_new_request(service, text):
 
 {text}
 """
+    
+# ---------- DATE VALIDATION ----------
 
+def validate_date(text):
+
+    try:
+
+        date = datetime.strptime(text,"%m-%d-%Y")
+
+        if date.date() < datetime.now().date():
+            return "past"
+
+        return "ok"
+
+    except:
+        return "format"
+        
 # ---------- STORAGE ----------
 
 def load_bookings():
@@ -725,61 +741,74 @@ def flow(m):
     # MANUAL DATE
     if step == "manual_date":
 
-        try:
+        result = validate_date(m.text)
 
-            date = datetime.strptime(m.text,"%m-%d-%Y")
-
-            if date.date() < datetime.now().date():
-
-                bot.send_message(
-                    m.chat.id,
-                    "❌ Date cannot be in the past"
-                )
-                return
-
-            d["date"] = m.text
-
-            kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            kb.add("Inside oven","Inside fridge","Windows")
-            kb.add("Done","Skip")
+        if result == "past":
 
             bot.send_message(
                 m.chat.id,
-                "✨ Select extra services",
-                reply_markup=kb
+                "❌ Date cannot be in the past"
             )
+            return
 
-            d["extras"] = []
-            d["step"] = "extras"
-
-        except:
+        if result == "format":
 
             bot.send_message(
                 m.chat.id,
                 "❌ Wrong format\nUse MM-DD-YYYY"
             )
-
-        return
-        step = d["step"]
-
-    # DRYER VENT DATE
-
-    if step == "vent_date":
+            return
 
         d["date"] = m.text
 
         kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        kb.add("Side wall")
-        kb.add("Roof")
-        kb.add("Not sure")
+        kb.add("Inside oven","Inside fridge","Windows")
+        kb.add("Done","Skip")
 
         bot.send_message(
             m.chat.id,
-            "📍 Where is the dryer vent located?",
+            style(
+                "✨ Extra Services",
+                "Select additional services."
+            ),
             reply_markup=kb
         )
 
-        d["step"] = "vent_location"
+        d["extras"] = []
+        d["step"] = "extras"
+
+        return
+
+    # DRYER VENT DATE
+    if step == "vent_date":
+
+        result = validate_date(m.text)
+
+        if result == "past":
+
+            bot.send_message(
+                m.chat.id,
+                "❌ Date cannot be in the past"
+            )
+            return
+
+        if result == "format":
+
+            bot.send_message(
+                m.chat.id,
+                "❌ Wrong format\nUse MM-DD-YYYY"
+            )
+            return
+
+        d["date"] = m.text
+
+        bot.send_message(
+            m.chat.id,
+            "👤 Enter your name"
+        )
+
+        d["step"] = "vent_name"
+
         return
 
     # VENT LOCATION
@@ -813,11 +842,11 @@ def flow(m):
 
             Final price depends on:
 
-        • surface size  
-        • moss removal  
-        • surface type  
-        • dirt buildup
-        """
+    • surface size  
+    • moss removal  
+    • surface type  
+    • dirt buildup
+    """
             ),
             
             parse_mode="Markdown"
@@ -878,29 +907,37 @@ def flow(m):
             d["step"] = "power_date"
             return
 
+    # POWER DATE
     if step == "power_date":
 
-        try:
+        result = validate_date(m.text)
 
-            date = datetime.strptime(m.text,"%m-%d-%Y")
+        if result == "past":
 
-            if date.date() < datetime.now().date():
+            bot.send_message(
+                m.chat.id,
+                "❌ Date cannot be in the past"
+            )
+            return
 
-                bot.send_message(
-                    m.chat.id,
-                    "❌ Date cannot be in the past"
-                )
-                return
-
-            d["date"] = m.text
-
-        except:
+        if result == "format":
 
             bot.send_message(
                 m.chat.id,
                 "❌ Wrong format\nUse MM-DD-YYYY"
             )
             return
+
+        d["date"] = m.text
+
+        bot.send_message(
+            m.chat.id,
+            "📍 Enter your address"
+        )
+
+        d["step"] = "power_address"
+
+        return
 
     # POWER ADDRESS
     if step == "power_address":
