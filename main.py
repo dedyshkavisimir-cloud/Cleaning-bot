@@ -813,11 +813,11 @@ def flow(m):
 
             Final price depends on:
 
-            • surface size  
-            • moss removal  
-            • surface type  
-            • dirt buildup
-            """
+        • surface size  
+        • moss removal  
+        • surface type  
+        • dirt buildup
+        """
             ),
             
             parse_mode="Markdown"
@@ -878,18 +878,29 @@ def flow(m):
             d["step"] = "power_date"
             return
 
-    # POWER DATE
     if step == "power_date":
 
-        d["date"] = m.text
+        try:
 
-        bot.send_message(
-            m.chat.id,
-            "📍 Enter your address"
-        )
+            date = datetime.strptime(m.text,"%m-%d-%Y")
 
-        d["step"] = "power_address"
-        return
+            if date.date() < datetime.now().date():
+
+                bot.send_message(
+                    m.chat.id,
+                    "❌ Date cannot be in the past"
+                )
+                return
+
+            d["date"] = m.text
+
+        except:
+
+            bot.send_message(
+                m.chat.id,
+                "❌ Wrong format\nUse MM-DD-YYYY"
+            )
+            return
 
     # POWER ADDRESS
     if step == "power_address":
@@ -928,6 +939,7 @@ f"""
 
 Surface: {d['surface']}
 
+💰 Estimated price: ${power_prices.get(d['surface'], '')}
 📅 {d['date']}
 👤 {d['name']}
 📞 {d['phone']}
@@ -993,6 +1005,7 @@ Surface: {d['surface']}
         f"""
         🔥 *NEW DRYER VENT REQUEST*
 
+        💰 Estimated price: $89 – $229
         👤 {d['name']}
         📞 {d['phone']}
 
@@ -1094,7 +1107,7 @@ Surface: {d['surface']}
         bot.send_message(
             ADMIN_ID,
 f"""
-🆕 *NEW CLEANING REQUEST*
+🆕 *NEW HOUSE CLEANING REQUEST*
 
 ━━━━━━━━━━━━
 
