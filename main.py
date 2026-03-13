@@ -253,35 +253,37 @@ def dryer_vent(m):
     user_data[m.chat.id] = {}
     d = user_data[m.chat.id]
 
-    d["step"] = "vent_date"
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb.add("Side wall")
+    kb.add("Roof")
+    kb.add("Not sure")
 
     bot.send_message(
         m.chat.id,
         style(
             "🌬 Dryer Vent Cleaning",
             """
+💰 *Estimated price:* $89 – $229
 
-    💰 *Estimated price:* $89 – $229
+Final price depends on:
 
-    Final price depends on:
+• vent length  
+• roof access  
+• heavy lint buildup  
+• bird nest removal  
 
-    • vent length  
-    • roof access  
-    • heavy lint buildup  
-    • bird nest removal  
+Most jobs take *30–45 minutes*
 
-    Most jobs take *30–45 minutes*
+━━━━━━━━━━━━
 
-    ━━━━━━━━━━━━
-
-    📅 Enter preferred service date
-
-    Example:
-    06-25-2026
-    """
+📍 Where is the dryer vent located?
+"""
         ),
-    parse_mode="Markdown"
+        reply_markup=kb,
+        parse_mode="Markdown"
     )
+
+    d["step"] = "vent_location"
 
 
 # ---------- POWER WASHING ----------
@@ -819,11 +821,24 @@ def flow(m):
 
         bot.send_message(
             m.chat.id,
-            "👤 Enter your name"
+            style(
+                "📅 Service Date",
+                """
+    Enter preferred service date
+
+    Format:
+    MM-DD-YYYY
+
+    Example:
+    06-25-2026
+    """
+            ),
+            parse_mode="Markdown"
         )
 
-        d["step"] = "vent_name"
-        return 
+        d["step"] = "vent_date"
+
+        return
 
      # POWER SURFACE
     if step == "power_surface":
