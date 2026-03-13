@@ -606,9 +606,13 @@ def flow(m):
 
             d["photos"].append(photo_id)
 
+            kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            kb.add("Skip")
+
             bot.send_message(
                 m.chat.id,
-                "📸 Photo added. Send more photos or press Skip."
+                "📸 Photo added. Send more photos or press Skip.",
+                reply_markup=kb
             )
 
             return
