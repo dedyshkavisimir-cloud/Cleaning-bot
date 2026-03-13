@@ -891,40 +891,41 @@ def flow(m):
         d["step"] = "power_phone"
         return
     
-    # POWER PHONE
+        # POWER PHONE
     if step == "power_phone":
 
         d["phone"] = m.text
 
         bot.send_message(
             ADMIN_ID,
-    f"""
-    💧 *NEW POWER WASH REQUEST*
+f"""
+💧 *NEW POWER WASH REQUEST*
 
-    Surface: {d['surface']}
-    
-    📅 {d['date']}
-    👤 {d['name']}
-    📞 {d['phone']}
+Surface: {d['surface']}
 
-    📍 Address:
-    {d['address']}
-    """,
+📅 {d['date']}
+👤 {d['name']}
+📞 {d['phone']}
+
+📍 Address:
+{d['address']}
+""",
             parse_mode="Markdown"
         )
-    if "photo" in d:
-        bot.send_photo(
-            ADMIN_ID,
-            d["photo"],
-            caption="📸 Power washing estimate photo"
-        )
+
+        if "photo" in d:
+            bot.send_photo(
+                ADMIN_ID,
+                d["photo"],
+                caption="📸 Power washing estimate photo"
+            )
 
         bot.send_message(
             m.chat.id,
-    """
-    ✅ Thank you! Your request has been sent. We will contact you soon.
-    """,
-            reply_markup=main_menu(m.chat.id)
+            "✅ Thank you! Your request has been sent. We will contact you soon.",
+            
+            reply_markup=main_menu(m.chat.id),
+            parse_mode="Markdown"
         )
 
         del user_data[m.chat.id]
