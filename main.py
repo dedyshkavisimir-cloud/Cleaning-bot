@@ -8,15 +8,15 @@ from flask import Flask, request
 
 # ---------- STYLE ----------
 
-    def style(title, text):
-        return f"""
-    🧼 *Cleaning Pros Team*
-    ━━━━━━━━━━━━ 
+def style(title, text):
+    return f"""
+🧼 *Cleaning Pros Team*
+━━━━━━━━━━━━ 
 
-    *{title}*
+*{title}*
 
-    {text}
-    """
+{text}
+"""
 
 TOKEN = "8695031161:AAFqAoGy2m14wnLOjuEywRG5FSKs77GiJRI"
 ADMIN_ID = 146998462
