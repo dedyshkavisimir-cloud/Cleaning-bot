@@ -51,6 +51,35 @@ power_prices = {
     "Roof": "250–500"
 }
 
+# ---------- MESSAGE STYLE ----------
+
+def client_confirmation(service):
+
+    return f"""
+📋 *Request received*
+
+🧹 Service: {service}
+
+━━━━━━━━━━━━
+
+✅ *Your request has been sent*
+
+Our manager will contact you shortly.
+
+Thank you for choosing  
+*Cleaning Pros Team* 🧼
+"""
+
+def admin_new_request(service, text):
+
+    return f"""
+🆕 *NEW REQUEST*
+
+🧹 Service: {service}
+
+{text}
+"""
+
 # ---------- STORAGE ----------
 
 def load_bookings():
