@@ -56,17 +56,15 @@ power_prices = {
 def client_confirmation(service):
 
     return f"""
-📋 *Request received*
+✅ *Thank you! Your request has been sent.*
 
 🧹 Service: {service}
 
 ━━━━━━━━━━━━
 
-✅ *Your request has been sent*
+Our manager will contact you shortly  
+(usually within 10 minutes).
 
-Our manager will contact you shortly.
-
-Thank you for choosing  
 *Cleaning Pros Team* 🧼
 """
 
@@ -351,36 +349,33 @@ def bedrooms(m):
 @bot.message_handler(func=lambda m: m.text in ["1 Bedroom","2 Bedrooms","3 Bedrooms"])
 def choose_date(m):
 
-    d = user_data[m.chat.id]
+        d = user_data[m.chat.id]
 
     bedrooms = m.text.split()[0]
 
     d["bedrooms"] = bedrooms
     d["price"] = prices[d["cleaning"]][bedrooms]
 
-    today = datetime.now()
-
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-
-    for i in range(1,4):
-        kb.add((today + timedelta(days=i)).strftime("%m-%d-%Y"))
-
-    kb.add("📅 Enter another date")
-
     bot.send_message(
-m.chat.id,
-f"""
-💰 *Estimated price:* ${d['price']}
+        m.chat.id,
+        style(
+            "📅 Cleaning Date",
+            f"""
+💰 Estimated price: ${d['price']}
 
-━━━━━━━━━━━━
+Enter preferred service date.
 
-📅 *Choose cleaning date*
-""",
-reply_markup=kb,
-parse_mode="Markdown"
-)
+Format:
+MM-DD-YYYY
 
-    d["step"] = "date"
+Example:
+06-25-2026
+"""
+        ),
+        parse_mode="Markdown"
+    )
+
+    d["step"] = "manual_date"
 
 @bot.message_handler(func=lambda m: m.chat.id in user_data and user_data[m.chat.id].get("step") == "date")
 def select_date(m):
@@ -497,7 +492,7 @@ def income(m):
 def flow(m):
     
     if m.text in [
-        "🧹 Book cleaning",
+        "🧹 Book house cleaning",
         "💰 Prices",
         "📞 Contact",
         "⚙ Admin panel",
@@ -682,8 +677,9 @@ def flow(m):
 
             bot.send_message(
                 m.chat.id,
-                "✅ Thank you! Your request has been sent. We will contact you soon.",
-                reply_markup=main_menu(m.chat.id)
+                client_confirmation("Quick Estimate"),
+                reply_markup=main_menu(m.chat.id),
+                parse_mode="Markdown"
             )
 
             del user_data[m.chat.id]
@@ -951,8 +947,7 @@ Surface: {d['surface']}
 
         bot.send_message(
             m.chat.id,
-            "✅ Thank you! Your request has been sent. We will contact you soon.",
-            
+            client_confirmation("Power Washing"),
             reply_markup=main_menu(m.chat.id),
             parse_mode="Markdown"
         )
@@ -1018,9 +1013,9 @@ Surface: {d['surface']}
 
         bot.send_message(
             m.chat.id,
-"""
-✅ Thank you! Your request has been sent. We will contact you soon.
-"""
+            client_confirmation("Dryer Vent Cleaning"),
+            reply_markup=main_menu(m.chat.id),
+            parse_mode="Markdown"
         )
 
         del user_data[m.chat.id]
@@ -1125,29 +1120,11 @@ f"""
         )
 
         bot.send_message(
-m.chat.id,
-f"""
-📋 *Booking Summary*
-
-🧹 Service: {d['cleaning']}
-🏠 Bedrooms: {d['bedrooms']}
-📅 Date: {d['date']}
-
-✨ Extras: {extras}
-
-💰 Total price: ${d['price']}
-
-━━━━━━━━━━━━
-
-✅ *Booking confirmed*
-
-Our manager will contact you shortly.
-Thank you for choosing  
-*Cleaning Pros Team* 🧼
-""",
-reply_markup=main_menu(m.chat.id),
-parse_mode="Markdown"
-)
+            m.chat.id,
+            client_confirmation("House Cleaning"),
+            reply_markup=main_menu(m.chat.id),
+            parse_mode="Markdown"
+        )
 
         del user_data[m.chat.id]
         return
