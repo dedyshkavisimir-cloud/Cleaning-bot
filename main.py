@@ -171,15 +171,14 @@ def quick_estimate(m):
         style(
             "⚡ Quick estimate",
             """
+    Send a short description of the job.
 
-Send a short description of the job.
+    Example:
+    Driveway power washing in Bellevue.
 
-Example:
-Driveway power washing in Bellevue.
-
-📸 You can attach photos for a more accurate estimate.
-""",
-        )
+    📸 You can attach photos for a more accurate estimate.
+    """
+        ),
         parse_mode="Markdown"
     )
 
