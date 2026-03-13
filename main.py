@@ -349,7 +349,7 @@ def bedrooms(m):
 @bot.message_handler(func=lambda m: m.text in ["1 Bedroom","2 Bedrooms","3 Bedrooms"])
 def choose_date(m):
 
-        d = user_data[m.chat.id]
+    d = user_data[m.chat.id]
 
     bedrooms = m.text.split()[0]
 
