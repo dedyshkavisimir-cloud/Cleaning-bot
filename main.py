@@ -838,9 +838,9 @@ def flow(m):
                 f"💧 {m.text} Power Washing",
                 f"""
 
-            💰 Estimated price: ${price_range}
+    💰 Estimated price: ${price_range}
 
-            Final price depends on:
+    Final price depends on:
 
     • surface size  
     • moss removal  
