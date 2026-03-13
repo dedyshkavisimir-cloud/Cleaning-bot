@@ -6,6 +6,18 @@ import time
 import os
 from flask import Flask, request
 
+# ---------- STYLE ----------
+
+    def style(title, text):
+        return f"""
+    🧼 *Cleaning Pros Team*
+    ━━━━━━━━━━━━ 
+
+    *{title}*
+
+    {text}
+    """
+
 TOKEN = "8695031161:AAFqAoGy2m14wnLOjuEywRG5FSKs77GiJRI"
 ADMIN_ID = 146998462
 
@@ -156,17 +168,18 @@ def quick_estimate(m):
 
     bot.send_message(
         m.chat.id,
-"""
-⚡ Quick estimate
+        style(
+            "⚡ Quick estimate",
+            """
 
-Please send a short description of the job and attach photos if possible.
+Send a short description of the job.
 
 Example:
 Driveway power washing in Bellevue.
 
-This helps us give you a faster estimate.
-        
+📸 You can attach photos for a more accurate estimate.
 """,
+        )
         parse_mode="Markdown"
     )
 
@@ -201,9 +214,10 @@ def dryer_vent(m):
     d["step"] = "vent_date"
 
     bot.send_message(
-    m.chat.id,
-    """
-    🌬 *Dryer Vent Cleaning*
+        m.chat.id,
+        style(
+            "🌬 Dryer Vent Cleaning",
+            """
 
     💰 *Estimated price:* $89 – $229
 
@@ -218,19 +232,24 @@ def dryer_vent(m):
 
     ━━━━━━━━━━━━
 
-    📅 *Enter preferred service date*
+    📅 Enter preferred service date
 
-    Example: 06-25-2026
-    """,
-        parse_mode="Markdown"
+    Example:
+    06-25-2026
+    """
+        ),
+    parse_mode="Markdown"
     )
+
 
 # ---------- POWER WASHING ----------
 
 @bot.message_handler(func=lambda m: m.text == "💧 Power washing")
 def power_washing(m):
-
-    user_data[m.chat.id] = {}
+    
+    if m.chat.id not in user_data:
+        user_data[m.chat.id] = {}
+        
     d = user_data[m.chat.id]
 
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -243,16 +262,17 @@ def power_washing(m):
 
     bot.send_message(
         m.chat.id,
-        """
-💧 *Power Washing*
-
-Select surface type
-""",
+        style(
+            "💧 Power Washing",
+            "Select the surface you need cleaned."
+        ),
+    
         reply_markup=kb,
         parse_mode="Markdown"
     )
 
     d["step"] = "power_surface"
+
 
 # ---------- BOOK CLEANING ----------
 
@@ -266,11 +286,15 @@ def cleaning_type(m):
 
     bot.send_message(
         m.chat.id,
-        "🧹 *Choose cleaning type*",
+        style(
+            "🧹 House Cleaning",
+            "Choose cleaning type."
+        ),
         reply_markup=kb,
         parse_mode="Markdown"
     )
-
+    
+     
 # ---------- BEDROOMS ----------
 
 @bot.message_handler(func=lambda m: m.text in prices)
@@ -286,7 +310,10 @@ def bedrooms(m):
 
     bot.send_message(
         m.chat.id,
-        "🏠 *How many bedrooms?*",
+        style(
+        "🏠 Bedrooms",
+        "How many bedrooms?"
+        ),
         reply_markup=kb,
         parse_mode="Markdown"
     )
@@ -350,7 +377,10 @@ def select_date(m):
 
     bot.send_message(
         m.chat.id,
-        "✨ Select extra services",
+        style(
+            "✨ Extra Services",
+            "Select additional services."
+        ),
         reply_markup=kb
     )
 
@@ -689,18 +719,21 @@ def flow(m):
 
         bot.send_message(
             m.chat.id,
-    f"""
-    💧 *{m.text} Power Washing*
+            style(
+                f"💧 {m.text} Power Washing",
+                f"""
 
-    💰 Estimated price: ${price_range}
+            💰 Estimated price: ${price_range}
 
-    Final price depends on:
+            Final price depends on:
 
-    • surface size  
-    • moss removal  
-    • surface type  
-    • dirt buildup
-    """,
+            • surface size  
+            • moss removal  
+            • surface type  
+            • dirt buildup
+            """
+            ),
+            
             parse_mode="Markdown"
         )
 
