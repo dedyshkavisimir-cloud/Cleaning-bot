@@ -612,7 +612,7 @@ def flow(m):
                 return
 
 
-            if m.text == "Skip":
+            if m.text and m.text.lower() == "skip":
 
                 bot.send_message(
                     ADMIN_ID,
@@ -652,6 +652,12 @@ def flow(m):
 
                 del user_data[m.chat.id]
                 return
+
+            bot.send_message(
+                m.chat.id,
+                "📸 Send photos or press Skip."
+            )
+            return
 
     # DATE
     if step == "date":
