@@ -576,34 +576,82 @@ def flow(m):
         # ---------- TEXT ----------
         if m.content_type == "text":
 
-            text = m.text
+            d["description"] = m.text
 
-            bot.send_message(
-                ADMIN_ID,
-                f"""
-    ⚡ NEW QUICK REQUEST
-
-    👤 {name}
-    📞 @{username}
-
-    📝 {text}
-    """
-            )
-
-            # если были фото — отправляем альбом
-            if "photos" in d:
-
-                media = [types.InputMediaPhoto(p) for p in d["photos"]]
-                bot.send_media_group(ADMIN_ID, media)
+            kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            kb.add("Skip")
 
             bot.send_message(
                 m.chat.id,
-                "✅ Thank you! Your request has been sent. We will contact you soon.",
-                reply_markup=main_menu(m.chat.id)
+                "📸 Send photos for a more accurate estimate or press Skip.",
+                reply_markup=kb
             )
 
-            del user_data[m.chat.id]
+            d["step"] = "quick_photos"
             return
+
+        # ---------- QUICK PHOTOS ----------
+        if step == "quick_photos":
+
+            name = m.from_user.first_name
+            username = m.from_user.username or "no username"
+
+            if m.content_type == "photo":
+
+                photo_id = m.photo[-1].file_id
+
+                if "photos" not in d:
+                    d["photos"] = []
+
+                d["photos"].append(photo_id)
+
+                bot.send_message(
+                    m.chat.id,
+                    "📸 Photo added. Send more photos or press Skip."
+                )
+                return
+
+
+            if m.text == "Skip":
+
+                bot.send_message(
+                    ADMIN_ID,
+                    f"""
+        ⚡ NEW QUICK REQUEST
+
+        👤 {name}
+        📞 @{username}
+
+        📝 {d['description']}
+        """
+                )
+
+                if "photos" in d:
+
+                    if len(d["photos"]) == 1:
+
+                        bot.send_photo(
+                            ADMIN_ID,
+                            d["photos"][0]
+                        )
+
+                    else:
+
+                        media = [types.InputMediaPhoto(p) for p in d["photos"]]
+
+                        bot.send_media_group(
+                            ADMIN_ID,
+                            media
+                        )
+
+                bot.send_message(
+                    m.chat.id,
+                    "✅ Thank you! Your request has been sent. We will contact you soon.",
+                    reply_markup=main_menu(m.chat.id)
+                )
+
+                del user_data[m.chat.id]
+                return
 
     # DATE
     if step == "date":
