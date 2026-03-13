@@ -119,7 +119,7 @@ def main_menu(user):
     kb.add("💧 Power washing")
     
     kb.add("💰 Prices","📞 Contact")
-
+    
     if user == ADMIN_ID:
         kb.add("⚙ Admin panel")
 
@@ -532,33 +532,6 @@ def flow(m):
         
         return
 
-    # QUICK ESTIMATE
-    if m.text == "⚡ Quick estimate":
-
-        user_data[m.chat.id] = {"step": "quick_estimate"}
-
-        bot.send_message(
-            m.chat.id,
-            """
-    ⚡ Quick estimate
-
-        Please send a short description of the job and attach photos if possible.
-
-        Example:
-        Driveway power washing in Bellevue.
-
-        This helps us give you a faster estimate.
-        """,
-            parse_mode="Markdown"
-        )
-        return
-        
-    d = user_data[m.chat.id]
-
-    if "step" not in d:
-        return
-
-    step = d["step"]
 
     # QUICK ESTIMATE
     if step == "quick_estimate":
@@ -710,35 +683,6 @@ def flow(m):
         )
         return
 
-    # DATE
-    if step == "date":
-
-        if m.text == "📅 Enter another date":
-
-            bot.send_message(
-                m.chat.id,
-                "Enter date MM-DD-YYYY\nExample: 06-25-2026"
-            )
-
-            d["step"] = "manual_date"
-            return
-
-        d["date"] = m.text
-
-        kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        kb.add("Inside oven","Inside fridge","Windows")
-        kb.add("Done","Skip")
-
-        bot.send_message(
-            m.chat.id,
-            "✨ Select extra services",
-            reply_markup=kb
-        )
-
-        d["extras"] = []
-        d["step"] = "extras"
-        return
-
 
     # MANUAL DATE
     if step == "manual_date":
@@ -843,6 +787,14 @@ def flow(m):
      # POWER SURFACE
     if step == "power_surface":
 
+        if m.text not in power_prices:
+
+            bot.send_message(
+                m.chat.id,
+                "Please select surface from menu."
+            )  
+            return
+
         d["surface"] = m.text
 
         price_range = power_prices.get(m.text,"")
@@ -852,7 +804,6 @@ def flow(m):
             style(
                 f"💧 {m.text} Power Washing",
                 f"""
-
     💰 Estimated price: ${price_range}
 
     Final price depends on:
@@ -861,9 +812,8 @@ def flow(m):
     • moss removal  
     • surface type  
     • dirt buildup
-    """
+    """ 
             ),
-            
             parse_mode="Markdown"
         )
 
@@ -872,9 +822,8 @@ def flow(m):
 
         bot.send_message(
             m.chat.id,
-            "📸 Send a photo for more accurate estimate or type skip",
-            reply_markup=kb,
-            parse_mode="Markdown"
+            "📸 Send a photo for more accurate estimate or type Skip",
+            reply_markup=kb
         )
 
         d["step"] = "power_photo"
@@ -889,16 +838,20 @@ def flow(m):
 
             bot.send_message(
                 m.chat.id,
-            """
-            📅 *Enter preferred service date*
+                style(
+                    "📅 Service Date",
+                    """
+            Enter preferred service date
 
-            Format: **MM-DD-YYYY**
+            Format:
+            MM-DD-YYYY
 
             Example:
             06-25-2026
-            """,
+            """
+                ),
                 parse_mode="Markdown"
-            )
+            )    
 
             d["step"] = "power_date"
             return
